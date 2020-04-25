@@ -21,8 +21,6 @@
 
               </mat-form-field>
 
-
-
               <mat-autocomplete #auto="matAutocomplete">
                 <mat-option *ngFor="let vehiculo of filterVehiculoResults" [value]="vehiculo.nemVehiculo">
                   {{ vehiculo.nemVehiculo + " " + vehiculo.modelo }}
