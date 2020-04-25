@@ -99,15 +99,18 @@
           <div class="form-group form-row mx-auto">
             <div class="col-md-4">
               <mat-form-field class="d-block" appearance="outline">
-                <mat-label>N° de Placa:</mat-label>
-                <input matInput id="nPlaca" formControlName="nPlaca" required type="text"/>
+                <mat-label>Agencia de salida:</mat-label>
+                <mat-select id="idAgenciaSalida" formControlName="idAgenciaSalida" required>
+                  <mat-option ></mat-option>
+                </mat-select>                
                 <mat-icon matSuffix><i class="fa fa-sort-numeric-asc"></i></mat-icon>
               </mat-form-field>
             </div>
 
             <div class="col-md-4">
               <mat-form-field class="d-block" appearance="outline">
-                <mat-label>Marca:</mat-label>
+                <mat-label>Combustible de salida:</mat-label>
+                <mat-slider></mat-slider>
                 <input matInput id="marcaVeh" formControlName="marcaVeh" required type="text"/>
                 <mat-icon matSuffix><i class="fa fa-list-alt"></i></mat-icon>
               </mat-form-field>
