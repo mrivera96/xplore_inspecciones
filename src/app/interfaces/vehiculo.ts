@@ -1,0 +1,37 @@
+export interface Vehiculo {
+  idVehiculo?: number;
+  idModeloVehiculo?: number;
+  idTipoCombustible?: number;
+  idTipoTransm?: number;
+  idTipoStereo?: number;
+  idEstado?: number;
+  vehiculoID?: string;
+  nomVehiculoQB?: string;
+  nemVehiculo?: string;
+  numMatricula?: string;
+  isPlaca?: number;
+  modelo?: any;
+  anio?: number;
+  color?: string;
+  numVIN?: string;
+  numMotor?: string;
+  tipoKilometraje?: string;
+  numCilindraje?: number;
+  numPuertas?: number;
+  numOcupantes?: number;
+  numGalones?: number;
+  imagen?: string;
+  valorTarifa?: number;
+  notas?: string;
+  fechaAlta?: string;
+  idCiudad?: number;
+  comentariosFlota?: string;
+  odometro?: number;
+  idTanqueFlota?: number;
+  idEstadoLimpieza?: number;
+  fechaAdquisicion?: string;
+  fechaCompra?: string;
+  idFinanciera?: number;
+  combustible?: any;
+  placa?: string;
+}
