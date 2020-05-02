@@ -1,15 +1,20 @@
-<div class="card mt-3 shadow">
-  <div class="card-header">
-    <h3 class="card-title">Nueva Inspección</h3>
-  </div>
-  <div class="card-body">
+<!-- INICIO CARD -->
+<mat-card class="shadow">
+  <mat-card-header>
+    <mat-card-title>
+      Nueva Inspección
+    </mat-card-title>
 
-    <mat-tab-group>
-      <form [formGroup]="crearForm">
-        <mat-tab label="Datos de Vehículo">
-          <div class="form-group form-row mx-auto">
-            <div class="col-md-12">
-
+  </mat-card-header>
+  <!-- INICIO CONTENIDO DEL CARD -->
+  <mat-card-content>
+    <!-- INICIO DE TAB-GROUP -->
+    <mat-tab-group mat-align-tabs="end">
+      <form [formGroup]="inspeccionForm" (ngSubmit)="onFormSubmit()">
+        <!-- INICIO TAB DE DATOS GENERALES -->
+        <mat-tab label="Datos de Vehículo" formGroupName="datosGenerales">
+          <div class="form-row mx-0">
+            <div class="col">
               <mat-form-field appearance="outline" class="d-block">
                 <mat-label class="ml-2">N° de Vehículo:</mat-label>
                 <input class="ml-2" matInput id="nVehiculo" formControlName="nVehiculo" required type="text"
@@ -30,8 +35,8 @@
 
           </div>
 
-          <div class="form-group form-row mx-auto">
-            <div class="col-md-4">
+          <div class="form-row mx-0">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>N° de Placa:</mat-label>
                 <input readonly matInput id="nPlaca" formControlName="nPlaca" required type="text"/>
@@ -39,7 +44,8 @@
               </mat-form-field>
             </div>
 
-            <div class="col-md-4">
+
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Marca:</mat-label>
                 <input readonly matInput id="marcaVeh" formControlName="marcaVeh" required type="text"/>
@@ -47,7 +53,7 @@
               </mat-form-field>
             </div>
 
-            <div class="col-md-4">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Modelo:</mat-label>
                 <input readonly matInput id="modeloVeh" formControlName="modeloVeh" required type="text"/>
@@ -56,17 +62,25 @@
             </div>
           </div>
 
-          <div class="form-group form-row mx-auto">
 
-            <div class="col-md-4">
+          <div class="form-row mx-0">
+
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Tipo de Vehículo:</mat-label>
-                <input readonly matInput id="tipoVehiculo" formControlName="tipoVehiculo" required type="text">
+                <mat-select id="tipoVehiculo" formControlName="tipoVehiculo" required>
+                  <mat-option>
+                    -Seleccione un tipo de vehículo-
+                  </mat-option>
+                  <mat-option *ngFor="let tipo of tiposVehiculos"
+                              value="{{tipo.idTipoVehiculo}}">{{tipo.descTipoVehiculo}}</mat-option>
+                </mat-select>
+
                 <mat-icon matSuffix><i class="fa fa-th-list"></i></mat-icon>
               </mat-form-field>
             </div>
 
-            <div class="col-md-4">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Color:</mat-label>
                 <input readonly matInput id="colorVeh" formControlName="colorVeh" required type="text">
@@ -74,18 +88,20 @@
               </mat-form-field>
             </div>
 
-            <div class="col-md-4">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Tipo de Kilometraje:</mat-label>
-                <input readonly matInput id="tipoKilom" formControlName="tipoKilom" required type="text">
+                <mat-select readonly id="tipoKilom" formControlName="tipoKilom" required>
+                  <mat-option *ngFor="let tipKil of tiposKilom" value="{{tipKil.v}}">{{tipKil.k}}</mat-option>
+
+                </mat-select>
                 <mat-icon matSuffix><i class="fa fa-dashboard"></i></mat-icon>
               </mat-form-field>
             </div>
-
           </div>
 
-          <div class="form-group form-row mx-auto">
-            <div class="col-md-4">
+          <div class="form-row mx-0">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Tipo de Combustible:</mat-label>
                 <input readonly matInput id="tipoComb" formControlName="tipoComb" required type="text">
@@ -93,41 +109,180 @@
               </mat-form-field>
             </div>
           </div>
-        </mat-tab>
 
-        <mat-tab label="Datos de Salida">
-          <div class="form-group form-row mx-auto">
-            <div class="col-md-4">
+
+        </mat-tab>
+        <!-- FIN TAB DE DATOS GENERALES -->
+
+
+        <!-- INICIO TAB DE DATOS DE SALIDA -->
+        <mat-tab label="Datos de Salida" formGroupName="datosSalida"
+                 [disabled]="!inspeccionForm.get('datosGenerales').valid">
+          <div class="form-row mx-0">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Agencia de salida:</mat-label>
                 <mat-select id="idAgenciaSalida" formControlName="idAgenciaSalida" required>
-                  <mat-option ></mat-option>
-                </mat-select>                
-                <mat-icon matSuffix><i class="fa fa-sort-numeric-asc"></i></mat-icon>
+                  <mat-option *ngFor="let agencia of agencias"
+                              value="{{agencia.idAgencia}}">{{agencia.descAgencia}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="form-row mx-2">
+            <div class="col-md-12">
+              <mat-label>Combustible de salida:</mat-label>
+            </div>
+            <div class="col-md-12">
+              <mat-slider class="d-block" thumbLabel [displayWith]="formatLabel" [(ngModel)]="tanqueCombValue" min="0"
+                          max="9" color="primary" id="combSalida" formControlName="combSalida"
+                          required></mat-slider>
+            </div>
+          </div>
+          <div class="form-row mx-0">
+            <div class="col">
+              <mat-form-field class="d-block" appearance="outline">
+                <mat-label>Rendimiento Combustible:</mat-label>
+                <input class="ml-2" matInput id="rendCombSalida" formControlName="rendCombSalida" required
+                       type="number"/>
+                <mat-icon matPrefix><i class="fa fa-dashboard"></i></mat-icon>
               </mat-form-field>
             </div>
 
-            <div class="col-md-4">
+            <div class="col">
               <mat-form-field class="d-block" appearance="outline">
-                <mat-label>Combustible de salida:</mat-label>
-                <mat-slider></mat-slider>
-                <input matInput id="marcaVeh" formControlName="marcaVeh" required type="text"/>
-                <mat-icon matSuffix><i class="fa fa-list-alt"></i></mat-icon>
-              </mat-form-field>
-            </div>
-
-            <div class="col-md-4">
-              <mat-form-field class="d-block" appearance="outline">
-                <mat-label>Modelo:</mat-label>
-                <input matInput id="modeloVeh" formControlName="modeloVeh" required type="text"/>
-                <mat-icon matSuffix><i class="fa fa-list"></i></mat-icon>
+                <mat-label>Odómetro Salida:</mat-label>
+                <input class="ml-2" matInput id="odoSalida" formControlName="odoSalida" required type="text"/>
+                <mat-icon matPrefix><i class="fa fa-car"></i></mat-icon>
               </mat-form-field>
             </div>
           </div>
 
-        </mat-tab>
-      </form>
-    </mat-tab-group>
+          <div class="form-row mx-0">
+            <div class="col">
+              <mat-form-field class="d-block" appearance="outline">
+                <mat-label>Fecha de Salida:</mat-label>
+                <input matInput formControlName="fechaSalida" [matDatepicker]="fecha">
+                <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+                <mat-datepicker #fecha></mat-datepicker>
+              </mat-form-field>
+            </div>
 
-  </div>
-</div>
+            <div class="col">
+              <mat-form-field class="d-block" appearance="outline">
+                <mat-label>Hora de Salida:</mat-label>
+                <input type="time" formControlName="horaSalida" matInput required>
+              </mat-form-field>
+            </div>
+
+          </div>
+
+        </mat-tab>
+        <!-- FIN TAB DE DATOS DE SALIDA -->
+
+        <!-- INICIO TAB ACCESORIOS -->
+        <mat-tab label="Accesorios" formGroupName="accesorios" [disabled]="!inspeccionForm.get('datosSalida').valid">
+          <div class="row mx-0">
+            <div class="col-md-4" *ngFor="let accesorio of accesorios">
+              <mat-form-field appearance="outline" class="d-block">
+                <mat-label>{{accesorio.nomAccesorio}}</mat-label>
+                <input formControlName="{{accesorio.nomAccesorio}}" matInput type="number" value="0">
+              </mat-form-field>
+            </div>
+          </div>
+
+
+        </mat-tab>
+        <!-- FIN TAB ACCESORIOS -->
+
+
+        <!-- INICIO TAB DAÑOS [disabled]="!inspeccionForm.get('datosSalida').valid"-->
+        <mat-tab label="Daños del Vehículo">
+          <div class="form-row mx-0">
+            <div class="col">
+              <!--<img src="../assets/img/car-line-draw.png" width="720px" alt="car line draw">-->
+              <canvas style="border: 1px solid #000;" #canvasDanios>
+              </canvas>
+              <p><a href="javascript:;" (click)="limpiarCanvas()" class="clearButton"><small>Limpiar</small></a></p>
+            </div>
+
+          </div>
+          <div class="form-row mx-0">
+            <div class="col">
+              <mat-form-field appearance="outline" class="d-block">
+                <mat-label>Tipo de daño:</mat-label>
+                <mat-select [(ngModel)]="shape" [ngModelOptions]="{standalone: true}">
+                  <mat-option value="1">Cuadrado</mat-option>
+                  <mat-option value="2">Círculo</mat-option>
+                  <mat-option value="3">Triángulo</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+
+          </div>
+
+        </mat-tab>
+        <!-- FIN TAB DAÑOS -->
+
+        <!-- INICIO TAB OBSERVACIONES -->
+        <mat-tab label="Observaciones" [disabled]="!inspeccionForm.get('datosSalida').valid">
+          <div class="form-row mx-0">
+            <div class="col">
+              <mat-form-field appearance="outline" class="d-block">
+                <mat-label>Observaciones:</mat-label>
+                <input formControlName="obsSalida" matInput>
+              </mat-form-field>
+            </div>
+
+          </div>
+
+
+        </mat-tab>
+
+        <!-- FIN TAB OBSERVACIONES -->
+
+        <!-- INICIO TAB FIRMA -->
+        <mat-tab label="Firma" formGroupName="firma">
+          <div class="form-row mx-0">
+            <div class="col">
+              <mat-form-field appearance="outline" class="d-block">
+                <mat-label>Nombre de quien recibe el vehículo:</mat-label>
+                <input matInput formControlName="nomRecibeVehiculo">
+                <mat-icon matSuffix><i class="fa fa-user"></i></mat-icon>
+              </mat-form-field>
+
+            </div>
+
+          </div>
+
+          <div class="form-row mx-0">
+            <div class="col">
+              <canvas style="border: 1px solid #000;" #canvasFirma>
+              </canvas>
+              <p><a href="javascript:;" (click)="limpiarCanvas()" class="clearButton"><small>Limpiar</small></a></p>
+            </div>
+          </div>
+
+          <div class="form-row mx-0">
+            <div class="col">
+              <button class="btn btn-success" type="submit"><i class="fa fa-save"></i> Guardar</button>
+            </div>
+            <div class="col">
+              <button class="btn btn-secondary" type="reset" (click)="limpiarForm()"><i class="fa fa-times"></i> Cancelar </button>
+            </div>
+          </div>
+        </mat-tab>
+        <!-- FIN TAB FIRMA -->
+
+      </form>
+      <!-- FIN DE FORMULARIO DE CREACIÓN -->
+    </mat-tab-group>
+    <!-- FIN DE TAB-GROUP -->
+    <div class="col-md-12 text-right">
+      <button class="btn btn-outline-primary" (click)="avanzarTab()" style="border-radius: 15px">Avanzar</button>
+    </div>
+  </mat-card-content>
+  <!-- FIN DEL CONTENIDO CARD -->
+</mat-card>
+<!-- FIN DEL CARD -->

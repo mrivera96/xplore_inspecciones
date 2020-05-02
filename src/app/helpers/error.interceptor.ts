@@ -21,7 +21,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       if (err.status === 401) {
         if (!request.url.includes('/auth/login')) {
           // auto deslogue al usuario si la api retorna un error 401
-          this.authenticationService.logout();
+          localStorage.removeItem('currentUser');
           location.reload(true);
         }
       }

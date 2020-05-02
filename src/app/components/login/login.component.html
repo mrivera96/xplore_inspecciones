@@ -1,55 +1,46 @@
+<!-- INICIO DE CONTENEDOR -->
 <div class="col-md-6 offset-md-3 mt-5">
 
   <h2 class="text-center">INSPECCIÓN DE VEHÍCULOS</h2>
-  <div class="card shadow shadow-sm">
 
-    <h4 class="card-header">Autenticación</h4>
-    <div class="card-body">
+  <!-- INICIO DE CARD -->
+  <mat-card class="shadow">
+    <mat-card-header >
+      <mat-card-title>
+        Autenticación
+      </mat-card-title>
+    </mat-card-header>
+
+
+    <!-- INICIO DE CONTENIDO DEL CARD -->
+    <mat-card-content>
+      <!-- INICIO FORMULARIO LOGIN -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
 
-          <mat-form-field class="d-block" appearance="outline" >
+          <mat-form-field class="d-block" appearance="outline">
             <mat-label>Usuario:</mat-label>
-            <input  formControlName="nickName" [ngClass]="{ 'is-invalid': submitted && f.nickName.errors }"  matInput placeholder = "Ingrese su usuario">
-            <mat-icon matSuffix> <i class="fa fa-user"></i></mat-icon>
+            <input formControlName="nickName" [ngClass]="{ 'is-invalid': submitted && f.nickName.errors }" matInput
+                   placeholder="Ingrese su usuario">
+            <mat-icon matSuffix><i class="fa fa-user"></i></mat-icon>
             <mat-error *ngIf="f.nickName.invalid"> El usuario es obligatorio.</mat-error>
 
           </mat-form-field>
-          <!--<label for="username">Usuario:</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text"> <i class="fa fa-user"></i></span>
-            </div>
-            <input id="username" placeholder="Ingrese su usuario" type="text" formControlName="nickName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.nickName.errors }" />
-            <div *ngIf="submitted && f.nickName.errors" class="invalid-feedback">
-              <div *ngIf="f.nickName.errors.required">El usuario es obligatorio.</div>
-            </div>
 
-          </div>-->
 
         </div>
         <div class="form-group">
           <mat-form-field class="d-block" appearance="outline">
             <mat-label>Contraseña:</mat-label>
-            <input matInput type="password" formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
+            <input matInput type="password" formControlName="password"
+                   [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
             <mat-icon matSuffix><i class="fa fa-key"></i></mat-icon>
             <mat-error *ngIf="f.password.invalid">La contraseña es obligatoria.</mat-error>
           </mat-form-field>
-          <!--
-          <label for="password">Contraseña:</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text"> <i class="fa fa-key"></i></span>
-            </div>
-            <input id="password" type="password" placeholder="Ingrese su contraseña" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
-            <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-              <div *ngIf="f.password.errors.required">La contraseña es obligatoria.</div>
-            </div>
-          </div>-->
 
         </div>
         <div class="form-group">
-          <input  id="remember_me" formControlName="remember_me" type="checkbox"> Recordar Usuario
+          <input id="remember_me" formControlName="remember_me" type="checkbox"> Recordar Usuario
         </div>
         <button [disabled]="loading" class="btn xplore-bg btn-outline btn-block text-white">
           <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1 "></span>
@@ -57,15 +48,21 @@
         </button>
 
       </form>
-    </div>
+      <!-- FIN FORMULARIO LOGIN -->
 
+    </mat-card-content>
+    <!-- FIN DE CONTENIDO DEL CARD -->
 
-  </div>
+  </mat-card>
+  <!-- FIN DE CARD -->
 
 </div>
+<!-- FIN DE CONTENEDOR -->
 
+
+<!-- INICIO DE MODAL -->
 <div id="errModal" class="modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document" >
+  <div class="modal-dialog" role="document">
     <div class="modal-content ">
       <div class="modal-header bg-warning">
         <h1 class="modal-title">Error al iniciar su sesión</h1>
@@ -82,3 +79,4 @@
     </div>
   </div>
 </div>
+<!-- FIN DE MODAL -->
