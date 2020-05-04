@@ -1,0 +1,140 @@
+<!-- INICIO DE CARD -->
+<div class="card shadow">
+  <!-- INICIO DE HEADER -->
+  <div class="card-header">
+    <h1 class="card-title">Inspección N° {{idInspeccion}}</h1>
+  </div>
+  <!-- FIN DE HEADER -->
+
+  <!-- INICIO DE CUERPO -->
+
+  <div class="card-body">
+    <form [formGroup]="inspeccionForm">
+      <div class="form-row mx-0">
+        <div class="col">
+          <h2>Datos de Entrega:</h2>
+        </div>
+      </div>
+      <div class="form-row mx-0">
+        <div class="col">
+          <mat-form-field class="d-block" appearance="outline">
+            <mat-label>Agencia:</mat-label>
+            <mat-select id="idAgenciaEntrega" formControlName="idAgenciaEntrega" required>
+              <mat-option *ngFor="let agencia of agencias" [value]="agencia.idAgencia">{{agencia.descAgencia}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="form-row mx-2">
+        <div class="col-md-12">
+          <mat-label>Combustible:</mat-label>
+        </div>
+        <div class="col-md-12">
+          <mat-slider class="d-block" thumbLabel [displayWith]="formatLabel" min="0"
+                      max="9" color="primary" id="combEntrega" formControlName="combEntrega" required></mat-slider>
+        </div>
+      </div>
+      <div class="form-row mx-0">
+        <div class="col">
+          <mat-form-field class="d-block" appearance="outline">
+            <mat-label>Rendimiento Combustible:</mat-label>
+            <input class="ml-2" matInput id="rendCombEntrega" formControlName="rendCombEntrega" required
+                   type="number"/>
+            <mat-icon matPrefix><i class="fa fa-dashboard"></i></mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <mat-form-field class="d-block" appearance="outline">
+            <mat-label>Odómetro:</mat-label>
+            <input class="ml-2" matInput id="odoEntrega" formControlName="odoEntrega" required type="text"/>
+            <mat-icon matPrefix><i class="fa fa-car"></i></mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-row mx-0">
+        <div class="col">
+          <mat-form-field class="d-block" appearance="outline">
+            <mat-label>Fecha de entrega:</mat-label>
+            <input  matInput formControlName="fechaEntrega" [matDatepicker]="fecha">
+            <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+            <mat-datepicker #fecha></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <mat-form-field class="d-block" appearance="outline">
+            <mat-label>Hora de Entrega:</mat-label>
+            <input type="time"  formControlName="horaEntrega" matInput required>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-row mx-0">
+        <div class="col">
+          <mat-form-field appearance="outline" class="d-block">
+            <mat-label>Nombre de quien entrega el vehículo:</mat-label>
+            <input matInput formControlName="nomEntregaVehiculo" required>
+            <mat-icon matSuffix><i class="fa fa-user"></i></mat-icon>
+          </mat-form-field>
+
+        </div>
+
+      </div>
+      <div class="form-row mx-0">
+        <div class="col">
+          <h3>Firma</h3>
+        </div>
+      </div>
+      <div class="form-row mx-0">
+        <div class="col">
+          <input id="firmaClienteEntrega" type="hidden" formControlName="firmaClienteEntrega">
+          <canvas id='blank' style='display:none' #blankCanvas></canvas>
+          <canvas style="border: 1px solid #000;" #canvasFirma>
+          </canvas>
+          <p><a href="javascript:;" (click)="limpiarCanvas()" class="clearButton"><small>Limpiar</small></a></p>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+  <!-- FIN DE CUERPO -->
+
+  <div class="modal-footer">
+    <div class="col">
+      <button class="btn btn-success" type="button" data-toggle="modal" data-target="#confirmModal" [disabled]="!inspeccionForm.valid"><i class="fa fa-save"></i> Guardar</button>
+    </div>
+    <div class="col">
+      <button class="btn btn-secondary" type="reset" (click)="limpiarForm()"><i class="fa fa-times"></i>
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+</div>
+<!-- FIN DE CARD -->
+
+<!-- INICIO DE MODAL -->
+<div id="confirmModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h1 class="modal-title text-white">Confirmar envío</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3> ¿Está seguro que desea cerrar esta inspección?</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" (click)="onFormSubmit()" >Aceptar</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN DE MODAL -->

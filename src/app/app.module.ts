@@ -25,6 +25,8 @@ import { MatSliderModule } from "@angular/material/slider";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatCardModule } from "@angular/material/card";
+import { VerComponent } from './components/inspecciones/ver/ver.component';
+import { CerrarComponent } from './components/inspecciones/cerrar/cerrar.component';
 
 
 @NgModule({
@@ -32,7 +34,9 @@ import { MatCardModule } from "@angular/material/card";
     AppComponent,
     HomeComponent,
     LoginComponent,
-    CrearComponent
+    CrearComponent,
+    VerComponent,
+    CerrarComponent,
   ],
   imports: [
     BrowserModule,

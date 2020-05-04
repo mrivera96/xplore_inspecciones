@@ -8,9 +8,18 @@
   </mat-card-header>
   <!-- INICIO CONTENIDO DEL CARD -->
   <mat-card-content>
+    <div class="card-body" *ngIf="loading">
+      <div class="form-row mx-0">
+        <div class="col text-center">
+          <img src="../assets/img/loading.svg" width="50%" alt="loading">
+        </div>
+      </div>
+    </div>
+
     <!-- INICIO DE TAB-GROUP -->
-    <mat-tab-group mat-align-tabs="end">
-      <form [formGroup]="inspeccionForm" (ngSubmit)="onFormSubmit()">
+
+    <mat-tab-group mat-align-tabs="end" *ngIf="!loading">
+      <form [formGroup]="inspeccionForm"  enctype="multipart/form-data">
         <!-- INICIO TAB DE DATOS GENERALES -->
         <mat-tab label="Datos de Vehículo" formGroupName="datosGenerales">
           <div class="form-row mx-0">
@@ -18,19 +27,22 @@
               <mat-form-field appearance="outline" class="d-block">
                 <mat-label class="ml-2">N° de Vehículo:</mat-label>
                 <input class="ml-2" matInput id="nVehiculo" formControlName="nVehiculo" required type="text"
-                       [matAutocomplete]="auto">
+                       [matAutocomplete]="auto" >
+
                 <button matSuffix mat-icon-button (click)="$event.stopPropagation();getVehiculoData()">
                   <mat-icon><i class="fa fa-search"></i></mat-icon>
                 </button>
                 <mat-icon matPrefix><i class="fa fa-car"></i></mat-icon>
 
               </mat-form-field>
+              <span class="text-danger" *ngIf="existeInspeccion">{{errInsp}}</span>
 
               <mat-autocomplete #auto="matAutocomplete">
                 <mat-option *ngFor="let vehiculo of filterVehiculoResults" [value]="vehiculo.nemVehiculo">
                   {{ vehiculo.nemVehiculo + " " + vehiculo.modelo }}
                 </mat-option>
               </mat-autocomplete>
+
             </div>
 
           </div>
@@ -72,8 +84,8 @@
                   <mat-option>
                     -Seleccione un tipo de vehículo-
                   </mat-option>
-                  <mat-option *ngFor="let tipo of tiposVehiculos"
-                              value="{{tipo.idTipoVehiculo}}">{{tipo.descTipoVehiculo}}</mat-option>
+                  <mat-option *ngFor="let tipo of tiposVehiculos" [value]="tipo.idTipoVehiculo">
+                    {{tipo.descTipoVehiculo}}</mat-option>
                 </mat-select>
 
                 <mat-icon matSuffix><i class="fa fa-th-list"></i></mat-icon>
@@ -92,7 +104,7 @@
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Tipo de Kilometraje:</mat-label>
                 <mat-select readonly id="tipoKilom" formControlName="tipoKilom" required>
-                  <mat-option *ngFor="let tipKil of tiposKilom" value="{{tipKil.v}}">{{tipKil.k}}</mat-option>
+                  <mat-option *ngFor="let tipKil of tiposKilom" [value]="tipKil.v">{{tipKil.k}}</mat-option>
 
                 </mat-select>
                 <mat-icon matSuffix><i class="fa fa-dashboard"></i></mat-icon>
@@ -123,8 +135,8 @@
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Agencia de salida:</mat-label>
                 <mat-select id="idAgenciaSalida" formControlName="idAgenciaSalida" required>
-                  <mat-option *ngFor="let agencia of agencias"
-                              value="{{agencia.idAgencia}}">{{agencia.descAgencia}}</mat-option>
+                  <mat-option *ngFor="let agencia of agencias" [value]="agencia.idAgencia">{{agencia.descAgencia}}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -134,9 +146,8 @@
               <mat-label>Combustible de salida:</mat-label>
             </div>
             <div class="col-md-12">
-              <mat-slider class="d-block" thumbLabel [displayWith]="formatLabel" [(ngModel)]="tanqueCombValue" min="0"
-                          max="9" color="primary" id="combSalida" formControlName="combSalida"
-                          required></mat-slider>
+              <mat-slider class="d-block" thumbLabel [displayWith]="formatLabel"  min="0"
+                          max="9" color="primary" id="combSalida" formControlName="combSalida" required></mat-slider>
             </div>
           </div>
           <div class="form-row mx-0">
@@ -162,7 +173,7 @@
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Fecha de Salida:</mat-label>
-                <input matInput formControlName="fechaSalida" [matDatepicker]="fecha">
+                <input  matInput formControlName="fechaSalida" [matDatepicker]="fecha">
                 <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                 <mat-datepicker #fecha></mat-datepicker>
               </mat-form-field>
@@ -197,17 +208,20 @@
 
 
         <!-- INICIO TAB DAÑOS [disabled]="!inspeccionForm.get('datosSalida').valid"-->
-        <mat-tab label="Daños del Vehículo">
+        <mat-tab label="Daños del Vehículo" [disabled]="!inspeccionForm.get('datosSalida').valid">
           <div class="form-row mx-0">
             <div class="col">
-              <!--<img src="../assets/img/car-line-draw.png" width="720px" alt="car line draw">-->
-              <canvas style="border: 1px solid #000;" #canvasDanios>
-              </canvas>
-              <p><a href="javascript:;" (click)="limpiarCanvas()" class="clearButton"><small>Limpiar</small></a></p>
+              <img class="img-fluid" src="../assets/img/car-line-draw.png" width="1000px" alt="car line draw"
+                   usemap="#danios">
+              <p class="text-dark" id="currentArea">Area: {{currentArea}}</p>
+              <map name="danios">
+                <area class="nav-item active" title="Puerta" shape="circle" coords="100,50,30" alt="Perl Tutorial"
+                      target="_self" href="#" data-toggle="modal" data-target="#danioModal"/>
+              </map>
             </div>
 
           </div>
-          <div class="form-row mx-0">
+          <!--<div class="form-row mx-0">
             <div class="col">
               <mat-form-field appearance="outline" class="d-block">
                 <mat-label>Tipo de daño:</mat-label>
@@ -220,35 +234,19 @@
             </div>
 
 
-          </div>
+          </div>-->
 
         </mat-tab>
         <!-- FIN TAB DAÑOS -->
 
-        <!-- INICIO TAB OBSERVACIONES -->
-        <mat-tab label="Observaciones" [disabled]="!inspeccionForm.get('datosSalida').valid">
-          <div class="form-row mx-0">
-            <div class="col">
-              <mat-form-field appearance="outline" class="d-block">
-                <mat-label>Observaciones:</mat-label>
-                <input formControlName="obsSalida" matInput>
-              </mat-form-field>
-            </div>
-
-          </div>
-
-
-        </mat-tab>
-
-        <!-- FIN TAB OBSERVACIONES -->
 
         <!-- INICIO TAB FIRMA -->
-        <mat-tab label="Firma" formGroupName="firma">
+        <mat-tab label="Firma" formGroupName="firma" [disabled]="!inspeccionForm.get('datosSalida').valid">
           <div class="form-row mx-0">
             <div class="col">
               <mat-form-field appearance="outline" class="d-block">
                 <mat-label>Nombre de quien recibe el vehículo:</mat-label>
-                <input matInput formControlName="nomRecibeVehiculo">
+                <input matInput formControlName="nomRecibeVehiculo" required>
                 <mat-icon matSuffix><i class="fa fa-user"></i></mat-icon>
               </mat-form-field>
 
@@ -258,6 +256,14 @@
 
           <div class="form-row mx-0">
             <div class="col">
+              <h3>Firma</h3>
+            </div>
+          </div>
+
+          <div class="form-row mx-0">
+            <div class="col">
+              <input id="firmaClienteSalida" type="hidden" formControlName="firmaClienteSalida">
+              <canvas id='blank' style='display:none' #blankCanvas></canvas>
               <canvas style="border: 1px solid #000;" #canvasFirma>
               </canvas>
               <p><a href="javascript:;" (click)="limpiarCanvas()" class="clearButton"><small>Limpiar</small></a></p>
@@ -266,10 +272,17 @@
 
           <div class="form-row mx-0">
             <div class="col">
-              <button class="btn btn-success" type="submit"><i class="fa fa-save"></i> Guardar</button>
+              <button class="btn btn-success" type="button" data-toggle="modal" data-target="#confirmModal" [disabled]="!inspeccionForm.get('firma').valid"><i class="fa fa-save"></i> Guardar</button>
             </div>
             <div class="col">
-              <button class="btn btn-secondary" type="reset" (click)="limpiarForm()"><i class="fa fa-times"></i> Cancelar </button>
+              <button class="btn btn-secondary" type="reset" (click)="limpiarForm()"><i class="fa fa-times"></i>
+                Cancelar
+              </button>
+            </div>
+            <div class="col">
+              <button data-toggle="modal" data-target="#resumenModal" class="btn btn-warning" type="button"><i
+                class="fa fa-file"></i> Resumen
+              </button>
             </div>
           </div>
         </mat-tab>
@@ -286,3 +299,129 @@
   <!-- FIN DEL CONTENIDO CARD -->
 </mat-card>
 <!-- FIN DEL CARD -->
+
+<!-- INICIO DE MODAL -->
+<div id="danioModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content ">
+      <div class="modal-header bg-success">
+        <h1 class="modal-title text-white">Agregar Daño</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row mx-0">
+          <div class="col">
+            <mat-form-field appearance="outline" class="d-block">
+              <mat-label>Tipo de daño</mat-label>
+              <input matInput required>
+
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN DE MODAL -->
+
+<!-- INICIO DE MODAL -->
+<div id="resumenModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content ">
+      <div class="modal-header xplore-bg">
+        <h1 class="modal-title text-white">Resumen de Inspección</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row mx-0">
+          <div class="col text-center">
+            <img src="../assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
+          </div>
+        </div>
+        <div class="form-row mx-0">
+          <h1>Datos Generales del vehículo:</h1>
+          <hr style="margin-top: 0" width="100%">
+        </div>
+        <div class="form-row mx-0">
+          <h3 class="col font-weight-bold">Número de vehículo:</h3>
+          <p class="col"> {{this.f.datosGenerales.get('nVehiculo').value}}</p>
+          <h3 class="col font-weight-bold">Número de placa:</h3>
+          <p class="col"> {{this.f.datosGenerales.get('nPlaca').value}}</p>
+
+        </div>
+
+        <div class="form-row mx-0">
+          <h3 class="col font-weight-bold">Marca:</h3>
+          <p class="col">{{this.f.datosGenerales.get('marcaVeh').value}}</p>
+          <h3 class="col font-weight-bold">Modelo:</h3>
+          <p class="col"> {{this.f.datosGenerales.get('modeloVeh').value}}</p>
+        </div>
+
+        <div class="form-row mx-0">
+          <h3 class="col font-weight-bold">Tipo:</h3>
+          <p class="col">{{getDesc(tiposVehiculos,this.f.datosGenerales.get('tipoVehiculo').value - 1)?.descTipoVehiculo}}</p>
+          <h3 class="col font-weight-bold">Color:</h3>
+          <p class="col"> {{this.f.datosGenerales.get('colorVeh').value}}</p>
+        </div>
+
+        <div class="form-row mx-0 ">
+          <h1>Datos de Salida:</h1>
+          <hr style="margin-top: 0" width="100%">
+        </div>
+
+        <div class="form-row mx-0">
+          <h3 class="col font-weight-bold">Agencia de dalida:</h3>
+          <p class="col" >{{getDesc(agencias, f.datosSalida.get('idAgenciaSalida').value)?.descAgencia}}</p>
+          <h3 class="col font-weight-bold">Combustible de Salida:</h3>
+          <p class="col" >{{ formatLabel(f.datosSalida.get('combSalida').value) }}</p>
+        </div>
+
+        <div class="form-row mx-0">
+          <h3 class="col font-weight-bold">Rendimiento combustible de salida:</h3>
+          <p class="col" >{{ f.datosSalida.get('rendCombSalida').value }}</p>
+          <h3 class="col font-weight-bold">Kilometraje:</h3>
+          <p class="col"> {{this.f.datosSalida.get('odoSalida').value}}</p>
+        </div>
+
+        <div class="form-row mx-0">
+          <h3 class="col font-weight-bold">Fecha y hora de salida:</h3>
+          <p class="col" >{{ f.datosSalida.get('fechaSalida').value | date:'dd/MM/yyyy' + ', ' +  f.datosSalida.get('horaSalida').value}}</p>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN DE MODAL -->
+
+<!-- INICIO DE MODAL -->
+<div id="confirmModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h1 class="modal-title text-white">Confirmar envío</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3> ¿Está seguro que desea guardar esta inspección?</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" (click)="onFormSubmit()" >Aceptar</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FIN DE MODAL -->

@@ -9,18 +9,22 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { VehiculosService } from "../../../services/vehiculos.service";
-import { Vehiculo} from "../../../interfaces/vehiculo";
-import { MatTabGroup } from "@angular/material/tabs";
-import { AgenciasService } from "../../../services/agencias.service";
-import { Agencia } from "../../../interfaces/agencia";
-import { Tanque } from "../../../interfaces/tanque";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {VehiculosService} from "../../../services/vehiculos.service";
+import {Vehiculo} from "../../../interfaces/vehiculo";
+import {MatTabGroup} from "@angular/material/tabs";
+import {AgenciasService} from "../../../services/agencias.service";
+import {Agencia} from "../../../interfaces/agencia";
+import {Tanque} from "../../../interfaces/tanque";
 import {Accesorio} from "../../../interfaces/accesorio";
 import {fromEvent} from "rxjs";
 import {pairwise, switchMap, takeUntil} from "rxjs/operators";
+import {TipoVehiculo} from "../../../interfaces/tipo-vehiculo";
+import {InspeccionesService} from "../../../services/inspecciones.service";
+import {Danio} from "../../../interfaces/danio";
+import {formatDate} from "@angular/common";
 
 
 @Component({
@@ -31,14 +35,11 @@ import {pairwise, switchMap, takeUntil} from "rxjs/operators";
 export class CrearComponent implements OnInit, AfterViewInit {
   inspeccionForm: FormGroup;
   loading = false;
-  submitted = false;
   returnUrl: string;
   error = '';
-  tanqueCombValue = 9;
-  private cx: CanvasRenderingContext2D;
   private cxFirma: CanvasRenderingContext2D;
   filterVehiculoResults: Vehiculo[] = [];
-  tiposVehiculos: [] = [];
+  tiposVehiculos: TipoVehiculo[] = [];
   tiposKilom: [{ v: string; k: string }, { v: string; k: string }] = [{
     k: 'Kilometros',
     v: 'K'
@@ -49,32 +50,44 @@ export class CrearComponent implements OnInit, AfterViewInit {
   agencias: Agencia[];
   tanquesCombustible: Tanque[];
   @ViewChild(MatTabGroup) matTabs: MatTabGroup;
-  fechaActual: Date = new Date();
-  horaActual: string = this.fechaActual.getHours() + ':' + this.fechaActual.getMinutes();
+  fechaActual: Date;
+  horaActual: string;
   accesorios: Accesorio[];
-  @ViewChild("canvasDanios") public canvasDanios: ElementRef;
+
   @ViewChild("canvasFirma") public canvasFirma: ElementRef;
+  @ViewChild("blankCanvas") public blankCanvas: ElementRef;
   @Input() public width = 900;
   @Input() public height = 650;
-  shape = 0;
+
+  currentArea = '';
+
+  danios: Danio[] = [];
+
+  existeInspeccion = false;
+  errInsp='';
+
 
   constructor(private formBuilder: FormBuilder,
               private route: ActivatedRoute,
               private router: Router,
               private authenticationService: AuthenticationService,
               private vehiculoService: VehiculosService,
-              private agenciasService: AgenciasService) {
-    this.vehiculoService.getTiposVehiculos().subscribe( response => {
-      this.tiposVehiculos = response.data;
-    });
+              private agenciasService: AgenciasService,
+              private inspeccionesService: InspeccionesService,
+              ) {
+    this.cargarDatos();
+
+
   }
 
   // getter para fácil acceso a los campos del formulario
-  get f() { return this.inspeccionForm.controls; }
+  get f() {
+    return this.inspeccionForm.controls;
+  }
 
   ngOnInit(): void {
     this.inspeccionForm = this.formBuilder.group({
-      datosGenerales : this.formBuilder.group({
+      datosGenerales: this.formBuilder.group({
         nVehiculo: ['', Validators.required],
         nPlaca: ['', Validators.required],
         marcaVeh: ['', Validators.required],
@@ -86,11 +99,11 @@ export class CrearComponent implements OnInit, AfterViewInit {
       }),
       datosSalida: this.formBuilder.group({
         idAgenciaSalida: ['', Validators.required],
-        combSalida: ['', Validators.required],
+        combSalida: [9, Validators.required],
         rendCombSalida: ['', Validators.required],
         odoSalida: ['', Validators.required],
-        fechaSalida: ['', Validators.required],
-        horaSalida: ['', Validators.required]
+        fechaSalida: [formatDate(this.fechaActual, 'yyyy-MM-dd', 'en'), Validators.required],
+        horaSalida: [formatDate(this.fechaActual, 'hh:mm', 'en'), Validators.required]
       }),
       accesorios: this.formBuilder.group({
         Alfombras: [0],
@@ -107,43 +120,28 @@ export class CrearComponent implements OnInit, AfterViewInit {
         Triangulo: [0],
         'Llave de Rueda': [0],
       }),
-      obsSalida: [''],
-
       firma: this.formBuilder.group({
         nomRecibeVehiculo: ['', Validators.required],
-        firmaClienteSalida: ['', Validators.required]
+        firmaClienteSalida: ['']
       })
     });
 
+    this.f.datosGenerales.get('nVehiculo').valueChanges.subscribe(filter => {
+      this.vehiculoService.searchVehiculo(filter).subscribe(response => {
+          this.filterVehiculoResults = response.data;
+      });
+    });
 
-    this.cargarDatos();
 
-    this.f.datosSalida.get('fechaSalida').setValue(this.fechaActual);
-    this.f.datosSalida.get('horaSalida').setValue(this.horaActual);
   }
 
   ngAfterViewInit() {
-    this.initCanvasDanios();
     this.initCanvasFirma();
   }
 
-  initCanvasDanios() {
-    const canvasEl: HTMLCanvasElement = this.canvasDanios.nativeElement;
-    this.cx = canvasEl.getContext('2d');
-
-    canvasEl.width = this.width;
-    canvasEl.height = this.height;
-
-    this.cx.lineWidth = 3;
-    this.cx.lineCap = 'round';
-    this.cx.strokeStyle = '#000';
-
-    this.dibujarImagen();
-    this.captureEvents(canvasEl);
-  }
 
   initCanvasFirma() {
-    const canvasElFirma: HTMLCanvasElement = this.canvasFirma.nativeElement;
+    const canvasElFirma: HTMLCanvasElement = this.canvasFirma?.nativeElement;
     this.cxFirma = canvasElFirma.getContext('2d');
 
     canvasElFirma.width = this.width / 3;
@@ -156,55 +154,56 @@ export class CrearComponent implements OnInit, AfterViewInit {
   }
 
 
-  dibujarImagen() {
-    const baseImage = new Image();
-    baseImage.src = '../assets/img/car-line-draw.png';
-
-    baseImage.onload = () => {
-      this.cx.drawImage(baseImage, 0, 0, 900, 650);
-    };
-  }
-
   cargarDatos() {
-    this.f.datosGenerales.get('nVehiculo').valueChanges.subscribe( filter => {
-      this.vehiculoService.searchVehiculo(filter).subscribe( response => {
-        this.filterVehiculoResults = response.data;
-      });
+    this.fechaActual = new Date();
+    this.horaActual = this.fechaActual.getHours() + ':' + this.fechaActual.getMinutes();
+
+    this.vehiculoService.getTiposVehiculos().subscribe(response => {
+      this.tiposVehiculos = response.data;
     });
 
-    this.agenciasService.getAgencias().subscribe( response => {
+    this.agenciasService.getAgencias().subscribe(response => {
       this.agencias = response.data;
     });
 
-    this.vehiculoService.getTanquesComb().subscribe( response => {
+    this.vehiculoService.getTanquesComb().subscribe(response => {
       this.tanquesCombustible = response.data;
     });
 
-    this.vehiculoService.getAccesorios().subscribe( response => {
+    this.vehiculoService.getAccesorios().subscribe(response => {
       this.accesorios = response.data;
     });
   }
 
   getVehiculoData() {
     if (this.f.datosGenerales.get('nVehiculo').value !== '') {
-    const nVehiculo = this.f.datosGenerales.get('nVehiculo').value;
-    this.vehiculoService.getVehiculoData(nVehiculo).subscribe( response => {
-      const vehiculo: Vehiculo = response.data;
-      this.llenarCampos(
-          vehiculo.modelo.marca.descMarca,
-          vehiculo.modelo.nomModelo,
-          vehiculo.color,
-          vehiculo.tipoKilometraje,
-          vehiculo.combustible.descTipoComb,
-        vehiculo.placa
-        );
-      const tVField = document.getElementById('tipoVehiculo');
-      tVField.focus();
+      const nVehiculo = this.f.datosGenerales.get('nVehiculo').value;
+      this.vehiculoService.getVehiculoData(nVehiculo).subscribe(response => {
+
+        if(response.error == 1){
+          this.existeInspeccion = true;
+          this.errInsp = response.message;
+        }else{
+          this.existeInspeccion = false;
+          const vehiculo: Vehiculo = response.data;
+          this.llenarCampos(
+            vehiculo.modelo.marca.descMarca,
+            vehiculo.modelo.nomModelo,
+            vehiculo.color,
+            vehiculo.tipoKilometraje,
+            vehiculo.combustible.descTipoComb,
+            vehiculo.placa
+          );
+          const tVField = document.getElementById('tipoVehiculo');
+          tVField.focus();
+        }
+
       });
     }
+
   }
 
-  llenarCampos( marca, modelo, color, tipoKilom, tipoComb, placa) {
+  llenarCampos(marca, modelo, color, tipoKilom, tipoComb, placa) {
     this.f.datosGenerales.get('marcaVeh').setValue(marca);
     this.f.datosGenerales.get('modeloVeh').setValue(modelo);
     this.f.datosGenerales.get('colorVeh').setValue(color);
@@ -214,32 +213,32 @@ export class CrearComponent implements OnInit, AfterViewInit {
   }
 
   avanzarTab() {
-      switch (this.matTabs.selectedIndex) {
-        case 0: {
-          if (!this.inspeccionForm.get('datosGenerales').valid) {
-            const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'));
-            invalidFields[1].focus();
-          } else {
-            this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
-          }
-          break;
-        }
-        case 1: {
-          if (!this.inspeccionForm.get('datosSalida').valid) {
-            const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'));
-            invalidFields[1].focus();
-          } else {
-            this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
-          }
-          break;
-        }
-
-        default: {
+    switch (this.matTabs.selectedIndex) {
+      case 0: {
+        if (!this.inspeccionForm.get('datosGenerales').valid) {
+          const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'));
+          invalidFields[1].focus();
+        } else {
           this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
-          break;
         }
-
+        break;
       }
+      case 1: {
+        if (!this.inspeccionForm.get('datosSalida').valid) {
+          const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'));
+          invalidFields[1].focus();
+        } else {
+          this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
+        }
+        break;
+      }
+
+      default: {
+        this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
+        break;
+      }
+
+    }
 
   }
 
@@ -303,83 +302,27 @@ export class CrearComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private drawOnCanvas( prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
-    switch (this.matTabs.selectedIndex) {
-      case 3: {
+  private drawOnCanvas(prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
 
-        if (!this.cx) { return; }
 
-        switch (this.shape) {
-          case "1": {
-            this.cx.strokeRect(currentPos.x, currentPos.y, 20, 20);
-            break;
-          }
-          case "2": {
-            this.cx.beginPath();
-            this.cx.arc(currentPos.x, currentPos.y, 11, 0, 2 * Math.PI);
-            this.cx.stroke();
-            this.cx.closePath();
-            break;
-          }
-          case "3": {
-            const height = 20 * (Math.sqrt(3) / 2);
-
-            this.cx.beginPath();
-            this.cx.moveTo(currentPos.x, currentPos.y);
-            this.cx.lineTo(currentPos.x + 10, currentPos.y + height);
-            this.cx.lineTo(currentPos.x - 10, currentPos.y + height );
-
-            this.cx.closePath();
-            this.cx.stroke();
-            break;
-          }
-          case "4": {
-            break;
-          }
-          default: {
-            this.cx.beginPath();
-            if (prevPos) {
-              this.cx.moveTo(prevPos.x, prevPos.y); // from
-              this.cx.lineTo(currentPos.x, currentPos.y);
-              this.cx.stroke();
-            }
-          }
-
-        }
-        break;
-      }
-      case 5: {
-        if (!this.cxFirma) { return; }
-
-        this.cxFirma.beginPath();
-        this.cx.bezierCurveTo(prevPos.x, prevPos.y, currentPos.x, currentPos.y, currentPos.x, currentPos.y);
-
-        if (prevPos) {
-          this.cxFirma.moveTo(prevPos.x, prevPos.y); // from
-          this.cxFirma.lineTo(currentPos.x, currentPos.y);
-          this.cxFirma.stroke();
-        }
-        break;
-      }
-
+    if (!this.cxFirma) {
+      return;
     }
+
+    this.cxFirma.beginPath();
+    this.cxFirma.bezierCurveTo(prevPos.x, prevPos.y, currentPos.x, currentPos.y, currentPos.x, currentPos.y);
+
+    if (prevPos) {
+      this.cxFirma.moveTo(prevPos.x, prevPos.y); // from
+      this.cxFirma.lineTo(currentPos.x, currentPos.y);
+      this.cxFirma.stroke();
+    }
+
 
   }
 
   limpiarCanvas() {
-    switch (this.matTabs.selectedIndex) {
-      case 3: {
-        this.cx.clearRect(0, 0, this.width, this.height);
-        this.dibujarImagen();
-        break;
-      }
-      case 5: {
-        this.cxFirma.clearRect(0, 0, this.width, this.height);
-        break;
-      }
-
-    }
-
+    this.cxFirma.clearRect(0, 0, this.width, this.height);
   }
 
   limpiarForm() {
@@ -388,10 +331,78 @@ export class CrearComponent implements OnInit, AfterViewInit {
   }
 
   onFormSubmit() {
-    if (this.inspeccionForm.valid) {
-      console.log(this.inspeccionForm);
+    const canvasElFirma: HTMLCanvasElement = this.canvasFirma.nativeElement;
+    const blankCanvas: HTMLCanvasElement = this.blankCanvas.nativeElement;
+    const cFirmData = canvasElFirma.toDataURL();
+    const bData = blankCanvas.toDataURL();
+    if (cFirmData == bData) {
+      this.f.firma.get('firmaClienteSalida').setValue(canvasElFirma.toDataURL("image/png"));
+    }
+
+    if (this.inspeccionForm.get('datosGenerales').valid && this.inspeccionForm.get('datosSalida').valid && this.inspeccionForm.get('firma').valid) {
+      this.loading = true;
+      this.inspeccionesService.agregarInspeccion(this.inspeccionForm.value).subscribe(response => {
+        if(response.error == 0){
+          this.loading = false;
+          this.router.navigate(['ver-inspeccion', response.data]);
+        }
+      });
     }
 
   }
 
+  getDesc(array?, index?) {
+    if (array) {
+      const item = array[index];
+      return item;
+    }
+  }
+
+
 }
+
+/*
+ switch (this.shape) {
+        case '1': {
+          this.cx.strokeRect(currentPos.x, currentPos.y, 20, 20);
+          break;
+        }
+        case '2': {
+          this.cx.beginPath();
+          this.cx.arc(currentPos.x, currentPos.y, 11, 0, 2 * Math.PI);
+          this.cx.stroke();
+          this.cx.closePath();
+          break;
+        }
+        case '3': {
+          const height = 20 * (Math.sqrt(3) / 2);
+
+          this.cx.beginPath();
+          this.cx.moveTo(currentPos.x, currentPos.y);
+          this.cx.lineTo(currentPos.x + 10, currentPos.y + height);
+          this.cx.lineTo(currentPos.x - 10, currentPos.y + height );
+
+          this.cx.closePath();
+          this.cx.stroke();
+          break;
+        }
+        case '4': {
+          break;
+        }
+        default: {
+          this.cx.beginPath();
+          if (prevPos) {
+            this.cx.moveTo(prevPos.x, prevPos.y); // from
+            this.cx.lineTo(currentPos.x, currentPos.y);
+            this.cx.stroke();
+          }
+        }
+
+      }
+      break;
+    }
+    case 5: {
+*/
+
+
+

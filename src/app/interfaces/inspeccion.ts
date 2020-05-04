@@ -1,9 +1,10 @@
 export interface Inspeccion {
+  idInspeccion?: number;
   idCliente?: number;
   idVehiculo?: number;
   idAgenciaSalida?: number;
   combSalida?: number;
-  redCombSalida?: number;
+  rendCombSalida?: number;
   odoSalida?: number;
   fechaSalida?: string;
   idUsuarioSalida?: number;
@@ -21,4 +22,6 @@ export interface Inspeccion {
   nomEntregaVehiculo?: string;
   idEstado?: number;
   fechaProceso?: string;
+  vehiculo?: any;
+  agencia_salida?: any;
 }

@@ -1,1 +1,49 @@
-<a class="btn btn-outline-primary" [routerLink]="['crear-inspeccion']">Crear Inspección</a>
+<!-- INICIO CARD -->
+<div class="card shadow">
+  <div class="card-header">
+    <div class="row">
+      <div class="col">
+        <h2 class="card-title">
+          Listado de inspecciones
+        </h2>
+      </div>
+      <div class="col">
+        <a class="btn btn-outline-success float-right" [routerLink]="['crear-inspeccion']">Agregar Inspección</a>
+      </div>
+    </div>
+
+
+  </div>
+  <!-- INICIO CONTENIDO DEL CARD -->
+  <div class="card-body">
+
+    <table class="table table-bordered table-striped table-hover">
+
+      <thead>
+      <tr>
+        <th scope="col">Nº de Inspección</th>
+        <th scope="col">Vehículo</th>
+        <th scope="col">Fecha de creación</th>
+        <th scope="col">Acción</th>
+      </tr>
+      </thead>
+
+      <tbody >
+      <img *ngIf="loading" class="mx-0"  width="100%" src="../assets/img/loading.svg">
+      <p *ngIf="!loading && !inspecciones">No hay datos disponibles en esta tabla</p>
+      <tr *ngFor="let inspeccion of inspecciones">
+        <td>{{inspeccion.idInspeccion}}</td>
+        <td>{{inspeccion.vehiculo['modelo'] + ' ' + inspeccion.vehiculo['nemVehiculo']}}</td>
+        <td>{{inspeccion.fechaProceso}}</td>
+        <td><a class="btn btn-warning" [routerLink]="['cerrar-inspeccion', inspeccion.idInspeccion]">Cerrar Inspección</a></td>
+      </tr>
+
+      </tbody>
+
+    </table>
+
+
+  </div>
+  <!-- FIN DEL CONTENIDO CARD -->
+</div>
+<!-- FIN DEL CARD  -->

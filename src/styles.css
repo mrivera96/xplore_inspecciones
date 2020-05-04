@@ -14,5 +14,10 @@
 .mat-slider-thumb-label-text {
   opacity: 1 !important;
 }
+@media print {
+  #printButton {
+    display: none;
+  }
+}
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
