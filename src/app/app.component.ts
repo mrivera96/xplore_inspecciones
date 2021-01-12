@@ -17,12 +17,12 @@ export class AppComponent {
     private router: Router,
     private authenticationService: AuthenticationService
   ) {
-    this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+    this.authenticationService.currentUser.subscribe(x => this.currentUser = x)
   }
 
   logout() {
     this.authenticationService.logout().subscribe(data => {
-      this.router.navigate(['/login']);
-    });
+      this.router.navigate(['/login'])
+    })
   }
 }

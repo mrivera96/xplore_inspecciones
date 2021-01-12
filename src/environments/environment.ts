@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost/inspApi/public/api'
+  apiUrl: 'http://localhost:8069/inspIntermediate/api.php',
 };
 
 /*

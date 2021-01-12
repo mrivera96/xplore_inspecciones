@@ -23,7 +23,7 @@ export class AuthenticationService {
   }
 
   login(nickname: string, password: string) {
-    return this.http.post<any>(`${environment.apiUrl}/auth/login`, {nickname, password})
+    return this.http.post<any>(`${environment.apiUrl}`, {nickname, password, function:'login'})
       .pipe(map(data => {
         const user = data.user;
         localStorage.setItem('currentUser', JSON.stringify(user));
@@ -32,8 +32,9 @@ export class AuthenticationService {
       }));
   }
 
+
   logout() {
-    return this.http.get(`${environment.apiUrl}/auth/logout`)
+    return this.http.post(`${environment.apiUrl}`,{function: 'logout', tkn: this.currentUserValue.access_token})
       .pipe(map(data => {
         localStorage.removeItem('currentUser');
         this.currentUserSubject.next(null);

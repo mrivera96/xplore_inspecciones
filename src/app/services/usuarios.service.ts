@@ -1,17 +1,24 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
-import {environment} from '../../environments/environment';
-import {Usuario} from '../interfaces/usuario';
+import { environment } from '../../environments/environment';
+import { Usuario } from '../interfaces/usuario';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-
-  constructor(private http: HttpClient) { }
+  usuarioActual: Usuario
+  constructor(private http: HttpClient,
+    private authService: AuthenticationService) {
+    this.usuarioActual = this.authService.currentUserValue
+  }
 
   public getAll() {
-     return this.http.get<Usuario[]>(`${environment.apiUrl}/usuarios/list`);
+    return this.http.post<Usuario[]>(`${environment.apiUrl}`, {
+      function: 'getUsuarios',
+      tkn: this.usuarioActual.access_token
+    });
   }
 }

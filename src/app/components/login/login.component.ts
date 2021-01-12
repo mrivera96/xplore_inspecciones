@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   ) {
     // redirigir si el usuario no está logueado
     if (this.authenticationService.currentUserValue) {
-      this.router.navigate(['/']);
+      this.router.navigate(['']);
     }
   }
 
