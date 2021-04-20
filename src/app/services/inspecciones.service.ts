@@ -43,4 +43,15 @@ export class InspeccionesService {
         tkn: this.usuarioActual.access_token
       });
   }
+
+  cerrarInspeccion(form, idInspeccion) {
+    return this.http.post<Response>(`${environment.apiUrl}`,
+      {
+        function: 'crrInspeccion',
+        form,
+        idInspeccion,
+        tkn: this.usuarioActual.access_token
+      }
+    );
+  }
 }

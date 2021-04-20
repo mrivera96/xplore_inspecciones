@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {VehiculosService} from "../../../services/vehiculos.service";
 import {AgenciasService} from "../../../services/agencias.service";
@@ -8,6 +8,7 @@ import {Tanque} from "../../../interfaces/tanque";
 import {formatDate} from "@angular/common";
 import {fromEvent} from "rxjs";
 import {pairwise, switchMap, takeUntil} from "rxjs/operators";
+import { InspeccionesService } from 'src/app/services/inspecciones.service';
 @Component({
   selector: 'app-cerrar',
   templateUrl: './cerrar.component.html',
@@ -25,6 +26,7 @@ export class CerrarComponent implements OnInit, AfterViewInit {
   private cxFirma: CanvasRenderingContext2D;
   @Input() public width = 900;
   @Input() public height = 650;
+  loading = false
 
   tanqueCombValue = 9;
   constructor(
@@ -32,6 +34,8 @@ export class CerrarComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private vehiculoService: VehiculosService,
     private agenciasService: AgenciasService,
+    private inspeccionesService: InspeccionesService,
+    private router: Router
     ) { }
 
   ngOnInit(): void {
@@ -54,7 +58,6 @@ export class CerrarComponent implements OnInit, AfterViewInit {
     this.route.paramMap.subscribe(params => {
       this.idInspeccion =  Number(params.get("idInspeccion"));
     });
-    console.log( this.horaActual);
 
     this.agenciasService.getAgencias().subscribe(response => {
       this.agencias = response.data;
@@ -112,6 +115,16 @@ export class CerrarComponent implements OnInit, AfterViewInit {
     const bData = blankCanvas.toDataURL();
     if (cFirmData == bData) {
       this.inspeccionForm.get('firmaClienteentrega').setValue(canvasElFirma.toDataURL("image/png"));
+    }
+
+    if (this.inspeccionForm.valid) {
+      this.loading = true;
+      this.inspeccionesService.cerrarInspeccion(this.inspeccionForm.value, this.idInspeccion).subscribe(response => {
+        if(response.error == 0){
+          this.loading = false;
+          this.router.navigate(['ver-inspeccion', response.data]);
+        }
+      });
     }
 
   }

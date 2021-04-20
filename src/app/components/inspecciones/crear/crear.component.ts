@@ -64,7 +64,7 @@ export class CrearComponent implements OnInit, AfterViewInit {
   danios: Danio[] = [];
 
   existeInspeccion = false;
-  errInsp='';
+  errInsp = '';
 
 
   constructor(private formBuilder: FormBuilder,
@@ -74,9 +74,9 @@ export class CrearComponent implements OnInit, AfterViewInit {
               private vehiculoService: VehiculosService,
               private agenciasService: AgenciasService,
               private inspeccionesService: InspeccionesService,
-              ) {
-    this.cargarDatos();
+  ) {
 
+    this.cargarDatos();
 
   }
 
@@ -128,88 +128,87 @@ export class CrearComponent implements OnInit, AfterViewInit {
 
     this.f.datosGenerales.get('nVehiculo').valueChanges.subscribe(filter => {
       this.vehiculoService.searchVehiculo(filter).subscribe(response => {
-          this.filterVehiculoResults = response.data;
+        this.filterVehiculoResults = response.data;
       });
     });
-
 
   }
 
   ngAfterViewInit() {
+
     this.initCanvasFirma();
   }
 
 
   initCanvasFirma() {
-    const canvasElFirma: HTMLCanvasElement = this.canvasFirma?.nativeElement;
-    this.cxFirma = canvasElFirma.getContext('2d');
+    const canvasElFirma: HTMLCanvasElement = this.canvasFirma?.nativeElement
+    this.cxFirma = canvasElFirma.getContext('2d')
 
-    canvasElFirma.width = this.width / 3;
-    canvasElFirma.height = this.height / 5;
+    canvasElFirma.width = this.width / 3
+    canvasElFirma.height = this.height / 5
 
-    this.cxFirma.lineWidth = 3;
-    this.cxFirma.lineCap = 'round';
-    this.cxFirma.strokeStyle = '#000';
-    this.captureEvents(canvasElFirma);
+    this.cxFirma.lineWidth = 3
+    this.cxFirma.lineCap = 'round'
+    this.cxFirma.strokeStyle = '#000'
+    this.captureEvents(canvasElFirma)
   }
 
-
   cargarDatos() {
-    this.fechaActual = new Date();
-    this.horaActual = this.fechaActual.getHours() + ':' + this.fechaActual.getMinutes();
+    this.fechaActual = new Date()
+    this.horaActual = this.fechaActual.getHours() + ':' + this.fechaActual.getMinutes()
 
     this.vehiculoService.getTiposVehiculos().subscribe(response => {
-      this.tiposVehiculos = response.data;
-    });
-
-    this.agenciasService.getAgencias().subscribe(response => {
-      this.agencias = response.data;
-    });
+      this.tiposVehiculos = response.data
+    })
 
     this.vehiculoService.getTanquesComb().subscribe(response => {
       this.tanquesCombustible = response.data;
-    });
+    })
+
+    this.agenciasService.getAgencias().subscribe(response => {
+      this.agencias = response.data
+    })
 
     this.vehiculoService.getAccesorios().subscribe(response => {
-      this.accesorios = response.data;
-    });
+      this.accesorios = response.data
+    })
   }
 
   getVehiculoData() {
     if (this.f.datosGenerales.get('nVehiculo').value !== '') {
-      const nVehiculo = this.f.datosGenerales.get('nVehiculo').value;
+      const nVehiculo = this.f.datosGenerales.get('nVehiculo').value
       this.vehiculoService.getVehiculoData(nVehiculo).subscribe(response => {
 
-        if(response.error == 1){
-          this.existeInspeccion = true;
-          this.errInsp = response.message;
-        }else{
-          this.existeInspeccion = false;
-          const vehiculo: Vehiculo = response.data;
+        if (response.error == 1) {
+          this.existeInspeccion = true
+          this.errInsp = response.message
+        } else {
+          this.existeInspeccion = false
+          const vehiculo: Vehiculo = response.data
           this.llenarCampos(
-            vehiculo.modelo.marca.descMarca,
-            vehiculo.modelo.nomModelo,
+            vehiculo.marca,
+            vehiculo.modelo,
             vehiculo.color,
+            vehiculo.tipoVehiculo,
             vehiculo.tipoKilometraje,
-            vehiculo.combustible.descTipoComb,
+            vehiculo.combustible,
             vehiculo.placa
-          );
-          const tVField = document.getElementById('tipoVehiculo');
-          tVField.focus();
+          )
         }
 
-      });
+      })
     }
 
   }
 
-  llenarCampos(marca, modelo, color, tipoKilom, tipoComb, placa) {
-    this.f.datosGenerales.get('marcaVeh').setValue(marca);
-    this.f.datosGenerales.get('modeloVeh').setValue(modelo);
-    this.f.datosGenerales.get('colorVeh').setValue(color);
-    this.f.datosGenerales.get('tipoKilom').setValue(tipoKilom);
-    this.f.datosGenerales.get('tipoComb').setValue(tipoComb);
-    this.f.datosGenerales.get('nPlaca').setValue(placa);
+  llenarCampos(marca, modelo, color, tipoVehiculo, tipoKilom, tipoComb, placa) {
+    this.f.datosGenerales.get('marcaVeh').setValue(marca)
+    this.f.datosGenerales.get('modeloVeh').setValue(modelo)
+    this.f.datosGenerales.get('colorVeh').setValue(color)
+    this.f.datosGenerales.get('tipoVehiculo').setValue(tipoVehiculo)
+    this.f.datosGenerales.get('tipoKilom').setValue(tipoKilom)
+    this.f.datosGenerales.get('tipoComb').setValue(tipoComb)
+    this.f.datosGenerales.get('nPlaca').setValue(placa)
   }
 
   avanzarTab() {
@@ -263,10 +262,9 @@ export class CrearComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   private captureEvents(canvasEl: HTMLCanvasElement) {
     // this will capture all mousedown events from the canvas element
-    fromEvent(canvasEl, 'mousedown')
+    /*fromEvent(canvasEl, 'mousedown')
       .pipe(
         switchMap((e) => {
           // after a mouse down, we'll record all mouse moves
@@ -299,11 +297,43 @@ export class CrearComponent implements OnInit, AfterViewInit {
 
         // this method we'll implement soon to do the actual drawing
         this.drawOnCanvas(prevPos, currentPos);
+      });*/
+
+    fromEvent(canvasEl, 'touchstart')
+      .pipe(
+        switchMap((e) => {
+          // after a mouse down, we'll record all mouse moves
+          return fromEvent(canvasEl, 'touchstart')
+            .pipe(
+              // we'll stop (and unsubscribe) once the user releases the mouse
+              // this will trigger a 'mouseup' event
+
+              // pairwise lets us get the previous value to draw a line from
+              // the previous point to the current point
+              pairwise()
+            );
+        })
+      )
+      .subscribe((res: [MouseEvent, MouseEvent]) => {
+        const rect = canvasEl.getBoundingClientRect();
+
+        // previous and current position with the offset
+        const prevPos = {
+          x: res[0].clientX - rect.left,
+          y: res[0].clientY - rect.top
+        };
+
+        const currentPos = {
+          x: res[1].clientX - rect.left,
+          y: res[1].clientY - rect.top
+        };
+
+        // this method we'll implement soon to do the actual drawing
+        this.drawOnCanvas(prevPos, currentPos);
       });
   }
 
   private drawOnCanvas(prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
-
 
     if (!this.cxFirma) {
       return;
@@ -317,7 +347,6 @@ export class CrearComponent implements OnInit, AfterViewInit {
       this.cxFirma.lineTo(currentPos.x, currentPos.y);
       this.cxFirma.stroke();
     }
-
 
   }
 
@@ -342,7 +371,7 @@ export class CrearComponent implements OnInit, AfterViewInit {
     if (this.inspeccionForm.get('datosGenerales').valid && this.inspeccionForm.get('datosSalida').valid && this.inspeccionForm.get('firma').valid) {
       this.loading = true;
       this.inspeccionesService.agregarInspeccion(this.inspeccionForm.value).subscribe(response => {
-        if(response.error == 0){
+        if (response.error == 0) {
           this.loading = false;
           this.router.navigate(['ver-inspeccion', response.data]);
         }
@@ -356,6 +385,16 @@ export class CrearComponent implements OnInit, AfterViewInit {
       const item = array[index];
       return item;
     }
+  }
+
+  increment(acc) {
+    const increment = this.f.accesorios.get(acc).value + 1
+    this.f.accesorios.get(acc).setValue(increment)
+  }
+
+  decrement(acc) {
+    const decrement = this.f.accesorios.get(acc).value - 1
+    this.f.accesorios.get(acc).setValue(decrement)
   }
 
 

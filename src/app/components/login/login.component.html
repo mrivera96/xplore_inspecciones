@@ -22,7 +22,7 @@
             <mat-label>Usuario:</mat-label>
             <input formControlName="nickName" [ngClass]="{ 'is-invalid': submitted && f.nickName.errors }" matInput
                    placeholder="Ingrese su usuario">
-            <mat-icon matSuffix><i class="fa fa-user"></i></mat-icon>
+            <mat-icon matSuffix>account_circle</mat-icon>
             <mat-error *ngIf="f.nickName.invalid"> El usuario es obligatorio.</mat-error>
 
           </mat-form-field>
@@ -34,7 +34,7 @@
             <mat-label>Contraseña:</mat-label>
             <input matInput type="password" formControlName="password"
                    [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
-            <mat-icon matSuffix><i class="fa fa-key"></i></mat-icon>
+            <mat-icon matSuffix>lock</mat-icon>
             <mat-error *ngIf="f.password.invalid">La contraseña es obligatoria.</mat-error>
           </mat-form-field>
 

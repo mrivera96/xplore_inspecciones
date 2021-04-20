@@ -1,3 +1,5 @@
+import { Estado } from "./estado";
+
 export interface Inspeccion {
   idInspeccion?: number;
   idCliente?: number;
@@ -24,4 +26,5 @@ export interface Inspeccion {
   fechaProceso?: string;
   vehiculo?: any;
   agencia_salida?: any;
+  estado?: Estado
 }

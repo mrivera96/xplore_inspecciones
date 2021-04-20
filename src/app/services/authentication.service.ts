@@ -24,12 +24,6 @@ export class AuthenticationService {
 
   login(nickname: string, password: string) {
     return this.http.post<any>(`${environment.apiUrl}`, {nickname, password, function:'login'})
-      .pipe(map(data => {
-        const user = data.user;
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-        return user;
-      }));
   }
 
 
@@ -39,6 +33,10 @@ export class AuthenticationService {
         localStorage.removeItem('currentUser');
         this.currentUserSubject.next(null);
       }));
+  }
+
+  setCurrUser(user){
+    this.currentUserSubject.next(user);
   }
 
 }

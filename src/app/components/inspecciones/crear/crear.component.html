@@ -11,7 +11,7 @@
     <div class="card-body" *ngIf="loading">
       <div class="form-row mx-0">
         <div class="col text-center">
-          <img src="../assets/img/loading.svg" width="50%" alt="loading">
+          <img src="assets/img/loading.svg" width="50%" alt="loading">
         </div>
       </div>
     </div>
@@ -27,24 +27,19 @@
               <mat-form-field appearance="outline" class="d-block">
                 <mat-label class="ml-2">N° de Vehículo:</mat-label>
                 <input class="ml-2" matInput id="nVehiculo" formControlName="nVehiculo" required type="text"
-                       [matAutocomplete]="auto" >
-
-                <button matSuffix mat-icon-button (click)="$event.stopPropagation();getVehiculoData()">
-                  <mat-icon><i class="fa fa-search"></i></mat-icon>
-                </button>
+                       [matAutocomplete]="auto">
                 <mat-icon matPrefix><i class="fa fa-car"></i></mat-icon>
 
               </mat-form-field>
               <span class="text-danger" *ngIf="existeInspeccion">{{errInsp}}</span>
 
               <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let vehiculo of filterVehiculoResults" [value]="vehiculo.nemVehiculo">
+                <mat-option *ngFor="let vehiculo of filterVehiculoResults" [value]="vehiculo.nemVehiculo" (click)="getVehiculoData()">
                   {{ vehiculo.nemVehiculo + " " + vehiculo.modelo }}
                 </mat-option>
               </mat-autocomplete>
 
             </div>
-
           </div>
 
           <div class="form-row mx-0">
@@ -55,7 +50,6 @@
                 <mat-icon matSuffix><i class="fa fa-sort-numeric-asc"></i></mat-icon>
               </mat-form-field>
             </div>
-
 
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
@@ -74,20 +68,12 @@
             </div>
           </div>
 
-
           <div class="form-row mx-0">
 
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Tipo de Vehículo:</mat-label>
-                <mat-select id="tipoVehiculo" formControlName="tipoVehiculo" required>
-                  <mat-option>
-                    -Seleccione un tipo de vehículo-
-                  </mat-option>
-                  <mat-option *ngFor="let tipo of tiposVehiculos" [value]="tipo.idTipoVehiculo">
-                    {{tipo.descTipoVehiculo}}</mat-option>
-                </mat-select>
-
+                <input readonly matInput id="tipoVehiculo" formControlName="tipoVehiculo" required type="text">
                 <mat-icon matSuffix><i class="fa fa-th-list"></i></mat-icon>
               </mat-form-field>
             </div>
@@ -103,10 +89,7 @@
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Tipo de Kilometraje:</mat-label>
-                <mat-select readonly id="tipoKilom" formControlName="tipoKilom" required>
-                  <mat-option *ngFor="let tipKil of tiposKilom" [value]="tipKil.v">{{tipKil.k}}</mat-option>
-
-                </mat-select>
+                <input readonly matInput id="tipoKilom" formControlName="tipoKilom" required type="text">
                 <mat-icon matSuffix><i class="fa fa-dashboard"></i></mat-icon>
               </mat-form-field>
             </div>
@@ -122,12 +105,11 @@
             </div>
           </div>
 
-
         </mat-tab>
         <!-- FIN TAB DE DATOS GENERALES -->
 
-
         <!-- INICIO TAB DE DATOS DE SALIDA -->
+        <!---->
         <mat-tab label="Datos de Salida" formGroupName="datosSalida"
                  [disabled]="!inspeccionForm.get('datosGenerales').valid">
           <div class="form-row mx-0">
@@ -141,6 +123,7 @@
               </mat-form-field>
             </div>
           </div>
+
           <div class="form-row mx-2">
             <div class="col-md-12">
               <mat-label>Combustible de salida:</mat-label>
@@ -150,6 +133,7 @@
                           max="9" color="primary" id="combSalida" formControlName="combSalida" required></mat-slider>
             </div>
           </div>
+
           <div class="form-row mx-0">
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
@@ -163,7 +147,7 @@
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Odómetro Salida:</mat-label>
-                <input class="ml-2" matInput id="odoSalida" formControlName="odoSalida" required type="text"/>
+                <input class="ml-2" matInput id="odoSalida" formControlName="odoSalida" required type="number"/>
                 <mat-icon matPrefix><i class="fa fa-car"></i></mat-icon>
               </mat-form-field>
             </div>
@@ -173,9 +157,7 @@
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
                 <mat-label>Fecha de Salida:</mat-label>
-                <input  matInput formControlName="fechaSalida" [matDatepicker]="fecha">
-                <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
-                <mat-datepicker #fecha></mat-datepicker>
+                <input type="date"  matInput formControlName="fechaSalida" >
               </mat-form-field>
             </div>
 
@@ -192,26 +174,24 @@
         <!-- FIN TAB DE DATOS DE SALIDA -->
 
         <!-- INICIO TAB ACCESORIOS -->
-        <mat-tab label="Accesorios" formGroupName="accesorios" [disabled]="!inspeccionForm.get('datosSalida').valid">
-          <div class="row mx-0">
-            <div class="col-md-4" *ngFor="let accesorio of accesorios">
-              <mat-form-field appearance="outline" class="d-block">
+        <!---->
+        <mat-tab label="Accesorios" formGroupName="accesorios" [disabled]="!inspeccionForm.get('datosSalida').valid" >
+          <div class="row">
+              <mat-form-field appearance="outline" class="col-4 w-25" *ngFor="let accesorio of accesorios" >
                 <mat-label>{{accesorio.nomAccesorio}}</mat-label>
-                <input formControlName="{{accesorio.nomAccesorio}}" matInput type="number" value="0">
+                <mat-icon (click)="decrement(accesorio.nomAccesorio)" matPrefix>remove</mat-icon>
+                <input formControlName="{{accesorio.nomAccesorio}}" matInput type="number" min="0" value="0">
+                <mat-icon (click)="increment(accesorio.nomAccesorio)" matSuffix>add</mat-icon>
               </mat-form-field>
-            </div>
           </div>
-
-
         </mat-tab>
         <!-- FIN TAB ACCESORIOS -->
 
-
-        <!-- INICIO TAB DAÑOS [disabled]="!inspeccionForm.get('datosSalida').valid"-->
+        <!-- INICIO TAB DAÑOS -->
         <mat-tab label="Daños del Vehículo" [disabled]="!inspeccionForm.get('datosSalida').valid">
           <div class="form-row mx-0">
             <div class="col">
-              <img class="img-fluid" src="../assets/img/car-line-draw.png" width="1000px" alt="car line draw"
+              <img class="img-fluid" src="assets/img/car-line-draw.png" width="1000px" alt="car line draw"
                    usemap="#danios">
               <p class="text-dark" id="currentArea">Area: {{currentArea}}</p>
               <map name="danios">
@@ -219,7 +199,6 @@
                       target="_self" href="#" data-toggle="modal" data-target="#danioModal"/>
               </map>
             </div>
-
           </div>
           <!--<div class="form-row mx-0">
             <div class="col">
@@ -233,15 +212,13 @@
               </mat-form-field>
             </div>
 
-
           </div>-->
 
         </mat-tab>
         <!-- FIN TAB DAÑOS -->
 
-
-        <!-- INICIO TAB FIRMA -->
-        <mat-tab label="Firma" formGroupName="firma" [disabled]="!inspeccionForm.get('datosSalida').valid">
+        <!-- INICIO TAB FIRMA [disabled]="!inspeccionForm.get('datosSalida').valid" -->
+        <mat-tab label="Firma" formGroupName="firma" >
           <div class="form-row mx-0">
             <div class="col">
               <mat-form-field appearance="outline" class="d-block">
@@ -249,9 +226,7 @@
                 <input matInput formControlName="nomRecibeVehiculo" required>
                 <mat-icon matSuffix><i class="fa fa-user"></i></mat-icon>
               </mat-form-field>
-
             </div>
-
           </div>
 
           <div class="form-row mx-0">
@@ -342,7 +317,7 @@
       <div class="modal-body">
         <div class="form-row mx-0">
           <div class="col text-center">
-            <img src="../assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
+            <img src="assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
           </div>
         </div>
         <div class="form-row mx-0">

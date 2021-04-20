@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import {AuthenticationService} from '../../services/authentication.service';
+import { AuthenticationService } from '../../services/authentication.service';
 declare var $: any;
 
 @Component({
@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
     });
 
     // obtener la url de retorno desde los parámetros de la ruta o por defecto a '/'
-    this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
+    //this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/';
   }
 
   // getter para fácil acceso a los campos del formulario
@@ -60,16 +60,21 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-    this.authenticationService.login(this.f.nickName.value, this.f.password.value)
-      .pipe(first())
+    const authSubs = this.authenticationService.login(this.f.nickName.value, this.f.password.value)
       .subscribe(
         data => {
-          this.router.navigate([this.returnUrl]);
+          const user = data.user;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.authenticationService.setCurrUser(user)
+          authSubs.unsubscribe()
+
+          this.router.navigate(['']);
         },
         error => {
           this.error = error;
           $("#errModal").modal('show');
           this.loading = false;
+          authSubs.unsubscribe()
         });
   }
 

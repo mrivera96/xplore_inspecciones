@@ -1,4 +1,4 @@
 export interface TipoVehiculo {
-  idTipoVehiculo?: number;
-  descTipoVehiculo?: string;
+  idTarifa?: number;
+  descTarifa?: string;
 }

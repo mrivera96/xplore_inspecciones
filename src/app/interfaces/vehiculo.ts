@@ -34,4 +34,6 @@ export interface Vehiculo {
   idFinanciera?: number;
   combustible?: any;
   placa?: string;
+  marca?: string
+  tipoVehiculo?: any
 }

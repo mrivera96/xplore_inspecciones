@@ -28,7 +28,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           } else if (response?.body?.message === "Unauthenticated.") {
             //if (!request.body.includes('function:"login"')) {
             // auto deslogue al usuario si la api retorna un error 401
-            localStorage.removeItem('currentUserManagement');
+            localStorage.removeItem('currentUser');
             location.reload(true);
             //}
           }

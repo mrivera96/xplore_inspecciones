@@ -2,7 +2,11 @@
 <div class="card shadow">
   <!-- INICIO DE HEADER -->
   <div class="card-header">
-    <h1 class="card-title">Hoja de inspección N° {{inspeccion?.idInspeccion}}</h1>
+    Hoja de inspección N° {{inspeccion?.idInspeccion}}
+    <div class="float-right">
+      {{inspeccion?.estado.descEstado}}
+    </div>
+    
   </div>
   <!-- FIN DE HEADER -->
 
@@ -10,7 +14,7 @@
   <div class="card-body" *ngIf="this.loading">
     <div class="form-row mx-0">
       <div class="col text-center">
-        <img src="../assets/img/loading.svg" width="50%" alt="loading">
+        <img src="assets/img/loading.svg" width="50%" alt="loading">
       </div>
     </div>
   </div>
@@ -19,7 +23,7 @@
 
     <div class="form-row mx-0">
       <div class="col text-center">
-        <img src="../assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
+        <img src="assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
       </div>
     </div>
 
@@ -70,6 +74,7 @@
   <!-- INICIO DE CUERPO -->
 
   <div class="modal-footer">
+    <button class="btn btn-outline-success" type="button" (click)="irACerrar()"><i class="fa fa-check"></i> Cerrar Inspección</button>
     <button id="printButton" type="button" (click)="imprimirHoja()" class="btn btn-outline-primary"><i class="fa fa-print"></i> Imprimir</button>
   </div>
 

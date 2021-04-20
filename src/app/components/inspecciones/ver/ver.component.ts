@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {InspeccionesService} from "../../../services/inspecciones.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Inspeccion} from "../../../interfaces/inspeccion";
 
 @Component({
@@ -17,6 +17,7 @@ export class VerComponent implements OnInit {
   constructor(
     private inspeccionesService: InspeccionesService,
     private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -53,5 +54,9 @@ export class VerComponent implements OnInit {
   }
   imprimirHoja(){
     window.print();
+  }
+
+  irACerrar(){
+    this.router.navigate(['cerrar-inspeccion', this.idInspeccion])
   }
 }

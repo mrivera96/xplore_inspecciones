@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { AuthenticationService } from './services/authentication.service';
 import { Usuario } from './interfaces/usuario';
-
+declare var $: any
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -21,8 +21,16 @@ export class AppComponent {
   }
 
   logout() {
+
     this.authenticationService.logout().subscribe(data => {
-      this.router.navigate(['/login'])
+      location.reload(true)
+      if ($('#sidenav').hasClass('active')) {
+        $('#sidenav').toggleClass('active')
+      }
     })
+  }
+
+  showLogout() {
+    $('#xploreUsrSubMenu').toggleClass('d-none')
   }
 }
