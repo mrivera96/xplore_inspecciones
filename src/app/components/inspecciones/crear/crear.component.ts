@@ -8,23 +8,24 @@ import {
   Output,
   ViewChild,
   ViewChildren
-} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {AuthenticationService} from '../../../services/authentication.service';
-import {VehiculosService} from "../../../services/vehiculos.service";
-import {Vehiculo} from "../../../interfaces/vehiculo";
-import {MatTabGroup} from "@angular/material/tabs";
-import {AgenciasService} from "../../../services/agencias.service";
-import {Agencia} from "../../../interfaces/agencia";
-import {Tanque} from "../../../interfaces/tanque";
-import {Accesorio} from "../../../interfaces/accesorio";
-import {fromEvent} from "rxjs";
-import {pairwise, switchMap, takeUntil} from "rxjs/operators";
-import {TipoVehiculo} from "../../../interfaces/tipo-vehiculo";
-import {InspeccionesService} from "../../../services/inspecciones.service";
-import {Danio} from "../../../interfaces/danio";
-import {formatDate} from "@angular/common";
+} from '@angular/core'
+import {FormBuilder, FormGroup, Validators} from '@angular/forms'
+import {ActivatedRoute, Router} from '@angular/router'
+import {AuthenticationService} from '../../../services/authentication.service'
+import {VehiculosService} from "../../../services/vehiculos.service"
+import {Vehiculo} from "../../../interfaces/vehiculo"
+import {MatTabGroup} from "@angular/material/tabs"
+import {AgenciasService} from "../../../services/agencias.service"
+import {Agencia} from "../../../interfaces/agencia"
+import {Tanque} from "../../../interfaces/tanque"
+import {Accesorio} from "../../../interfaces/accesorio"
+import {fromEvent} from "rxjs"
+import {pairwise, switchMap, takeUntil} from "rxjs/operators"
+import {TipoVehiculo} from "../../../interfaces/tipo-vehiculo"
+import {InspeccionesService} from "../../../services/inspecciones.service"
+import {Danio} from "../../../interfaces/danio"
+import {formatDate} from "@angular/common"
+import SignaturePad from "signature_pad";
 
 
 @Component({
@@ -33,38 +34,41 @@ import {formatDate} from "@angular/common";
   styleUrls: ['./crear.component.css']
 })
 export class CrearComponent implements OnInit, AfterViewInit {
-  inspeccionForm: FormGroup;
-  loading = false;
-  returnUrl: string;
-  error = '';
-  private cxFirma: CanvasRenderingContext2D;
-  filterVehiculoResults: Vehiculo[] = [];
-  tiposVehiculos: TipoVehiculo[] = [];
+  inspeccionForm: FormGroup
+  loading = false
+  returnUrl: string
+  error = ''
+  shape
+  private cxFirma: CanvasRenderingContext2D
+  filterVehiculoResults: Vehiculo[] = []
+  tiposVehiculos: TipoVehiculo[] = []
   tiposKilom: [{ v: string; k: string }, { v: string; k: string }] = [{
     k: 'Kilometros',
     v: 'K'
   }, {
     k: 'Millas',
     v: 'M'
-  }];
-  agencias: Agencia[];
-  tanquesCombustible: Tanque[];
-  @ViewChild(MatTabGroup) matTabs: MatTabGroup;
-  fechaActual: Date;
-  horaActual: string;
-  accesorios: Accesorio[];
+  }]
+  agencias: Agencia[]
+  tanquesCombustible: Tanque[]
+  @ViewChild(MatTabGroup) matTabs: MatTabGroup
+  @ViewChild('damages') damagesPadElement : ElementRef
+  damagesPad: any
+  fechaActual: Date
+  horaActual: string
+  accesorios: Accesorio[]
 
-  @ViewChild("canvasFirma") public canvasFirma: ElementRef;
-  @ViewChild("blankCanvas") public blankCanvas: ElementRef;
-  @Input() public width = 900;
-  @Input() public height = 650;
+  @ViewChild("canvasFirma") public canvasFirma: ElementRef
+  @ViewChild("blankCanvas") public blankCanvas: ElementRef
+  @Input() public width = 900
+  @Input() public height = 650
 
-  currentArea = '';
+  currentArea = ''
 
-  danios: Danio[] = [];
+  danios: Danio[] = []
 
-  existeInspeccion = false;
-  errInsp = '';
+  existeInspeccion = false
+  errInsp = ''
 
 
   constructor(private formBuilder: FormBuilder,
@@ -76,13 +80,13 @@ export class CrearComponent implements OnInit, AfterViewInit {
               private inspeccionesService: InspeccionesService,
   ) {
 
-    this.cargarDatos();
+    this.cargarDatos()
 
   }
 
   // getter para fácil acceso a los campos del formulario
   get f() {
-    return this.inspeccionForm.controls;
+    return this.inspeccionForm.controls
   }
 
   ngOnInit(): void {
@@ -124,19 +128,20 @@ export class CrearComponent implements OnInit, AfterViewInit {
         nomRecibeVehiculo: ['', Validators.required],
         firmaClienteSalida: ['']
       })
-    });
+    })
 
     this.f.datosGenerales.get('nVehiculo').valueChanges.subscribe(filter => {
       this.vehiculoService.searchVehiculo(filter).subscribe(response => {
-        this.filterVehiculoResults = response.data;
-      });
-    });
+        this.filterVehiculoResults = response.data
+      })
+    })
 
   }
 
   ngAfterViewInit() {
+    this.damagesPad = new SignaturePad(this.damagesPadElement?.nativeElement)
 
-    this.initCanvasFirma();
+    this.initCanvasFirma()
   }
 
 
@@ -162,7 +167,7 @@ export class CrearComponent implements OnInit, AfterViewInit {
     })
 
     this.vehiculoService.getTanquesComb().subscribe(response => {
-      this.tanquesCombustible = response.data;
+      this.tanquesCombustible = response.data
     })
 
     this.agenciasService.getAgencias().subscribe(response => {
@@ -215,26 +220,26 @@ export class CrearComponent implements OnInit, AfterViewInit {
     switch (this.matTabs.selectedIndex) {
       case 0: {
         if (!this.inspeccionForm.get('datosGenerales').valid) {
-          const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'));
-          invalidFields[1].focus();
+          const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'))
+          invalidFields[1].focus()
         } else {
-          this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
+          this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1
         }
-        break;
+        break
       }
       case 1: {
         if (!this.inspeccionForm.get('datosSalida').valid) {
-          const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'));
-          invalidFields[1].focus();
+          const invalidFields = [].slice.call(document.getElementsByClassName('ng-invalid'))
+          invalidFields[1].focus()
         } else {
-          this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
+          this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1
         }
-        break;
+        break
       }
 
       default: {
-        this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1;
-        break;
+        this.matTabs.selectedIndex = this.matTabs.selectedIndex + 1
+        break
       }
 
     }
@@ -244,19 +249,19 @@ export class CrearComponent implements OnInit, AfterViewInit {
   formatLabel(value: number | null) {
     switch (value) {
       case 0: {
-        return 'E';
-        break;
+        return 'E'
+        break
       }
       case 8: {
-        return 'F';
-        break;
+        return 'F'
+        break
       }
       case 9: {
-        return 'F+';
-        break;
+        return 'F+'
+        break
       }
       default: {
-        return value + '/8';
+        return value + '/8'
       }
 
     }
@@ -278,26 +283,26 @@ export class CrearComponent implements OnInit, AfterViewInit {
               // pairwise lets us get the previous value to draw a line from
               // the previous point to the current point
               pairwise()
-            );
+            )
         })
       )
       .subscribe((res: [MouseEvent, MouseEvent]) => {
-        const rect = canvasEl.getBoundingClientRect();
+        const rect = canvasEl.getBoundingClientRect()
 
         // previous and current position with the offset
         const prevPos = {
           x: res[0].clientX - rect.left,
           y: res[0].clientY - rect.top
-        };
+        }
 
         const currentPos = {
           x: res[1].clientX - rect.left,
           y: res[1].clientY - rect.top
-        };
+        }
 
         // this method we'll implement soon to do the actual drawing
-        this.drawOnCanvas(prevPos, currentPos);
-      });*/
+        this.drawOnCanvas(prevPos, currentPos)
+      })*/
 
     fromEvent(canvasEl, 'touchstart')
       .pipe(
@@ -311,79 +316,79 @@ export class CrearComponent implements OnInit, AfterViewInit {
               // pairwise lets us get the previous value to draw a line from
               // the previous point to the current point
               pairwise()
-            );
+            )
         })
       )
       .subscribe((res: [MouseEvent, MouseEvent]) => {
-        const rect = canvasEl.getBoundingClientRect();
+        const rect = canvasEl.getBoundingClientRect()
 
         // previous and current position with the offset
         const prevPos = {
           x: res[0].clientX - rect.left,
           y: res[0].clientY - rect.top
-        };
+        }
 
         const currentPos = {
           x: res[1].clientX - rect.left,
           y: res[1].clientY - rect.top
-        };
+        }
 
         // this method we'll implement soon to do the actual drawing
-        this.drawOnCanvas(prevPos, currentPos);
-      });
+        this.drawOnCanvas(prevPos, currentPos)
+      })
   }
 
   private drawOnCanvas(prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
 
     if (!this.cxFirma) {
-      return;
+      return
     }
 
-    this.cxFirma.beginPath();
-    this.cxFirma.bezierCurveTo(prevPos.x, prevPos.y, currentPos.x, currentPos.y, currentPos.x, currentPos.y);
+    this.cxFirma.beginPath()
+    this.cxFirma.bezierCurveTo(prevPos.x, prevPos.y, currentPos.x, currentPos.y, currentPos.x, currentPos.y)
 
     if (prevPos) {
-      this.cxFirma.moveTo(prevPos.x, prevPos.y); // from
-      this.cxFirma.lineTo(currentPos.x, currentPos.y);
-      this.cxFirma.stroke();
+      this.cxFirma.moveTo(prevPos.x, prevPos.y) // from
+      this.cxFirma.lineTo(currentPos.x, currentPos.y)
+      this.cxFirma.stroke()
     }
 
   }
 
   limpiarCanvas() {
-    this.cxFirma.clearRect(0, 0, this.width, this.height);
+    this.cxFirma.clearRect(0, 0, this.width, this.height)
   }
 
   limpiarForm() {
-    this.inspeccionForm.reset();
-    this.matTabs.selectedIndex = 0;
+    this.inspeccionForm.reset()
+    this.matTabs.selectedIndex = 0
   }
 
   onFormSubmit() {
-    const canvasElFirma: HTMLCanvasElement = this.canvasFirma.nativeElement;
-    const blankCanvas: HTMLCanvasElement = this.blankCanvas.nativeElement;
-    const cFirmData = canvasElFirma.toDataURL();
-    const bData = blankCanvas.toDataURL();
+    const canvasElFirma: HTMLCanvasElement = this.canvasFirma.nativeElement
+    const blankCanvas: HTMLCanvasElement = this.blankCanvas.nativeElement
+    const cFirmData = canvasElFirma.toDataURL()
+    const bData = blankCanvas.toDataURL()
     if (cFirmData == bData) {
-      this.f.firma.get('firmaClienteSalida').setValue(canvasElFirma.toDataURL("image/png"));
+      this.f.firma.get('firmaClienteSalida').setValue(canvasElFirma.toDataURL("image/png"))
     }
 
     if (this.inspeccionForm.get('datosGenerales').valid && this.inspeccionForm.get('datosSalida').valid && this.inspeccionForm.get('firma').valid) {
-      this.loading = true;
+      this.loading = true
       this.inspeccionesService.agregarInspeccion(this.inspeccionForm.value).subscribe(response => {
         if (response.error == 0) {
-          this.loading = false;
-          this.router.navigate(['ver-inspeccion', response.data]);
+          this.loading = false
+          this.router.navigate(['ver-inspeccion', response.data])
         }
-      });
+      })
     }
 
   }
 
   getDesc(array?, index?) {
     if (array) {
-      const item = array[index];
-      return item;
+      const item = array[index]
+      return item
     }
   }
 
@@ -403,42 +408,42 @@ export class CrearComponent implements OnInit, AfterViewInit {
 /*
  switch (this.shape) {
         case '1': {
-          this.cx.strokeRect(currentPos.x, currentPos.y, 20, 20);
-          break;
+          this.cx.strokeRect(currentPos.x, currentPos.y, 20, 20)
+          break
         }
         case '2': {
-          this.cx.beginPath();
-          this.cx.arc(currentPos.x, currentPos.y, 11, 0, 2 * Math.PI);
-          this.cx.stroke();
-          this.cx.closePath();
-          break;
+          this.cx.beginPath()
+          this.cx.arc(currentPos.x, currentPos.y, 11, 0, 2 * Math.PI)
+          this.cx.stroke()
+          this.cx.closePath()
+          break
         }
         case '3': {
-          const height = 20 * (Math.sqrt(3) / 2);
+          const height = 20 * (Math.sqrt(3) / 2)
 
-          this.cx.beginPath();
-          this.cx.moveTo(currentPos.x, currentPos.y);
-          this.cx.lineTo(currentPos.x + 10, currentPos.y + height);
-          this.cx.lineTo(currentPos.x - 10, currentPos.y + height );
+          this.cx.beginPath()
+          this.cx.moveTo(currentPos.x, currentPos.y)
+          this.cx.lineTo(currentPos.x + 10, currentPos.y + height)
+          this.cx.lineTo(currentPos.x - 10, currentPos.y + height )
 
-          this.cx.closePath();
-          this.cx.stroke();
-          break;
+          this.cx.closePath()
+          this.cx.stroke()
+          break
         }
         case '4': {
-          break;
+          break
         }
         default: {
-          this.cx.beginPath();
+          this.cx.beginPath()
           if (prevPos) {
-            this.cx.moveTo(prevPos.x, prevPos.y); // from
-            this.cx.lineTo(currentPos.x, currentPos.y);
-            this.cx.stroke();
+            this.cx.moveTo(prevPos.x, prevPos.y) // from
+            this.cx.lineTo(currentPos.x, currentPos.y)
+            this.cx.stroke()
           }
         }
 
       }
-      break;
+      break
     }
     case 5: {
 */

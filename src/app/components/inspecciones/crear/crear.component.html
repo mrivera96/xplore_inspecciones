@@ -104,14 +104,13 @@
               </mat-form-field>
             </div>
           </div>
-
         </mat-tab>
         <!-- FIN TAB DE DATOS GENERALES -->
 
         <!-- INICIO TAB DE DATOS DE SALIDA -->
-        <!---->
+        <!--[disabled]="!inspeccionForm.get('datosGenerales').valid"-->
         <mat-tab label="Datos de Salida" formGroupName="datosSalida"
-                 [disabled]="!inspeccionForm.get('datosGenerales').valid">
+                 >
           <div class="form-row mx-0">
             <div class="col">
               <mat-form-field class="d-block" appearance="outline">
@@ -174,8 +173,8 @@
         <!-- FIN TAB DE DATOS DE SALIDA -->
 
         <!-- INICIO TAB ACCESORIOS -->
-        <!---->
-        <mat-tab label="Accesorios" formGroupName="accesorios" [disabled]="!inspeccionForm.get('datosSalida').valid" >
+        <!--[disabled]="!inspeccionForm.get('datosSalida').valid" -->
+        <mat-tab label="Accesorios" formGroupName="accesorios" >
           <div class="row">
               <mat-form-field appearance="outline" class="col-4 w-25" *ngFor="let accesorio of accesorios" >
                 <mat-label>{{accesorio.nomAccesorio}}</mat-label>
@@ -188,32 +187,13 @@
         <!-- FIN TAB ACCESORIOS -->
 
         <!-- INICIO TAB DAÑOS -->
-        <mat-tab label="Daños del Vehículo" [disabled]="!inspeccionForm.get('datosSalida').valid">
+        <!--[disabled]="!inspeccionForm.get('datosSalida').valid"-->
+        <mat-tab label="Daños del Vehículo" >
           <div class="form-row mx-0">
             <div class="col">
-              <img class="img-fluid" src="assets/img/car-line-draw.png" width="1000px" alt="car line draw"
-                   usemap="#danios">
-              <p class="text-dark" id="currentArea">Area: {{currentArea}}</p>
-              <map name="danios">
-                <area class="nav-item active" title="Puerta" shape="circle" coords="100,50,30" alt="Perl Tutorial"
-                      target="_self" href="#" data-toggle="modal" data-target="#danioModal"/>
-              </map>
+              <canvas #damages width="1000px" height="700" style="background-image: url('assets/img/car-line-draw.png'); background-size: 1000px"></canvas>
             </div>
           </div>
-          <!--<div class="form-row mx-0">
-            <div class="col">
-              <mat-form-field appearance="outline" class="d-block">
-                <mat-label>Tipo de daño:</mat-label>
-                <mat-select [(ngModel)]="shape" [ngModelOptions]="{standalone: true}">
-                  <mat-option value="1">Cuadrado</mat-option>
-                  <mat-option value="2">Círculo</mat-option>
-                  <mat-option value="3">Triángulo</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-          </div>-->
-
         </mat-tab>
         <!-- FIN TAB DAÑOS -->
 
