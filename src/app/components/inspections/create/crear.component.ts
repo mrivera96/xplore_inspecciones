@@ -2,30 +2,27 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
-  ViewChildren
 } from '@angular/core'
 import {FormBuilder, FormGroup, Validators} from '@angular/forms'
 import {ActivatedRoute, Router} from '@angular/router'
 import {AuthenticationService} from '../../../services/authentication.service'
-import {VehiculosService} from "../../../services/vehiculos.service"
-import {Vehiculo} from "../../../interfaces/vehiculo"
+import {CarsService} from "../../../services/cars.service"
+import {Car} from "../../../interfaces/car"
 import {MatTabGroup} from "@angular/material/tabs"
-import {AgenciasService} from "../../../services/agencias.service"
-import {Agencia} from "../../../interfaces/agencia"
-import {Tanque} from "../../../interfaces/tanque"
-import {Accesorio} from "../../../interfaces/accesorio"
-import {fromEvent} from "rxjs"
-import {pairwise, switchMap, takeUntil} from "rxjs/operators"
-import {TipoVehiculo} from "../../../interfaces/tipo-vehiculo"
-import {InspeccionesService} from "../../../services/inspecciones.service"
-import {Danio} from "../../../interfaces/danio"
+import {AgenciesService} from "../../../services/agencies.service"
+import {Agency} from "../../../interfaces/agency"
+import {Tank} from "../../../interfaces/tank"
+import {Accesory} from "../../../interfaces/accesory"
+import {CarType} from "../../../interfaces/car-type"
+import {InspectionsService} from "../../../services/inspections.service"
 import {formatDate} from "@angular/common"
 import SignaturePad from "signature_pad";
+import {MatDialog} from "@angular/material/dialog";
+import {ResumeDialogComponent} from "../resume-dialog/resume-dialog.component";
+import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 
 
 @Component({
@@ -36,12 +33,10 @@ import SignaturePad from "signature_pad";
 export class CrearComponent implements OnInit, AfterViewInit {
   inspeccionForm: FormGroup
   loading = false
-  returnUrl: string
   error = ''
-  shape
   private cxFirma: CanvasRenderingContext2D
-  filterVehiculoResults: Vehiculo[] = []
-  tiposVehiculos: TipoVehiculo[] = []
+  filterVehiculoResults: Car[] = []
+  tiposVehiculos: CarType[] = []
   tiposKilom: [{ v: string; k: string }, { v: string; k: string }] = [{
     k: 'Kilometros',
     v: 'K'
@@ -49,35 +44,32 @@ export class CrearComponent implements OnInit, AfterViewInit {
     k: 'Millas',
     v: 'M'
   }]
-  agencias: Agencia[]
-  tanquesCombustible: Tanque[]
+  agencies: Agency[]
+  tanquesCombustible: Tank[]
   @ViewChild(MatTabGroup) matTabs: MatTabGroup
-  @ViewChild('damages') damagesPadElement : ElementRef
-  damagesPad: any
+  @ViewChild('damages') damagePadElement : ElementRef
+  damagePad: any
   fechaActual: Date
   horaActual: string
-  accesorios: Accesorio[]
+  accesorios: Accesory[]
 
-  @ViewChild("canvasFirma") public canvasFirma: ElementRef
+  @ViewChild("canvasFirma") public firmaPadElement: ElementRef
+  firmaPad: any
   @ViewChild("blankCanvas") public blankCanvas: ElementRef
   @Input() public width = 900
   @Input() public height = 650
 
-  currentArea = ''
-
-  danios: Danio[] = []
-
   existeInspeccion = false
   errInsp = ''
-
 
   constructor(private formBuilder: FormBuilder,
               private route: ActivatedRoute,
               private router: Router,
               private authenticationService: AuthenticationService,
-              private vehiculoService: VehiculosService,
-              private agenciasService: AgenciasService,
-              private inspeccionesService: InspeccionesService,
+              private vehiculoService: CarsService,
+              private agenciasService: AgenciesService,
+              private inspeccionesService: InspectionsService,
+              public dialog: MatDialog
   ) {
 
     this.cargarDatos()
@@ -127,7 +119,8 @@ export class CrearComponent implements OnInit, AfterViewInit {
       firma: this.formBuilder.group({
         nomRecibeVehiculo: ['', Validators.required],
         firmaClienteSalida: ['']
-      })
+      }),
+      danios:['']
     })
 
     this.f.datosGenerales.get('nVehiculo').valueChanges.subscribe(filter => {
@@ -139,23 +132,9 @@ export class CrearComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.damagesPad = new SignaturePad(this.damagesPadElement?.nativeElement)
-
-    this.initCanvasFirma()
-  }
-
-
-  initCanvasFirma() {
-    const canvasElFirma: HTMLCanvasElement = this.canvasFirma?.nativeElement
-    this.cxFirma = canvasElFirma.getContext('2d')
-
-    canvasElFirma.width = this.width / 3
-    canvasElFirma.height = this.height / 5
-
-    this.cxFirma.lineWidth = 3
-    this.cxFirma.lineCap = 'round'
-    this.cxFirma.strokeStyle = '#000'
-    this.captureEvents(canvasElFirma)
+    this.damagePad = new SignaturePad(this.damagePadElement?.nativeElement)
+    this.firmaPad = new SignaturePad(this.firmaPadElement?.nativeElement)
+    this.drawCarLine()
   }
 
   cargarDatos() {
@@ -171,7 +150,7 @@ export class CrearComponent implements OnInit, AfterViewInit {
     })
 
     this.agenciasService.getAgencias().subscribe(response => {
-      this.agencias = response.data
+      this.agencies = response.data
     })
 
     this.vehiculoService.getAccesorios().subscribe(response => {
@@ -189,7 +168,7 @@ export class CrearComponent implements OnInit, AfterViewInit {
           this.errInsp = response.message
         } else {
           this.existeInspeccion = false
-          const vehiculo: Vehiculo = response.data
+          const vehiculo: Car = response.data
           this.llenarCampos(
             vehiculo.marca,
             vehiculo.modelo,
@@ -267,96 +246,13 @@ export class CrearComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private captureEvents(canvasEl: HTMLCanvasElement) {
-    // this will capture all mousedown events from the canvas element
-    /*fromEvent(canvasEl, 'mousedown')
-      .pipe(
-        switchMap((e) => {
-          // after a mouse down, we'll record all mouse moves
-          return fromEvent(canvasEl, 'mousemove')
-            .pipe(
-              // we'll stop (and unsubscribe) once the user releases the mouse
-              // this will trigger a 'mouseup' event
-              takeUntil(fromEvent(canvasEl, 'mouseup')),
-              // we'll also stop (and unsubscribe) once the mouse leaves the canvas (mouseleave event)
-              takeUntil(fromEvent(canvasEl, 'mouseleave')),
-              // pairwise lets us get the previous value to draw a line from
-              // the previous point to the current point
-              pairwise()
-            )
-        })
-      )
-      .subscribe((res: [MouseEvent, MouseEvent]) => {
-        const rect = canvasEl.getBoundingClientRect()
-
-        // previous and current position with the offset
-        const prevPos = {
-          x: res[0].clientX - rect.left,
-          y: res[0].clientY - rect.top
-        }
-
-        const currentPos = {
-          x: res[1].clientX - rect.left,
-          y: res[1].clientY - rect.top
-        }
-
-        // this method we'll implement soon to do the actual drawing
-        this.drawOnCanvas(prevPos, currentPos)
-      })*/
-
-    fromEvent(canvasEl, 'touchstart')
-      .pipe(
-        switchMap((e) => {
-          // after a mouse down, we'll record all mouse moves
-          return fromEvent(canvasEl, 'touchstart')
-            .pipe(
-              // we'll stop (and unsubscribe) once the user releases the mouse
-              // this will trigger a 'mouseup' event
-
-              // pairwise lets us get the previous value to draw a line from
-              // the previous point to the current point
-              pairwise()
-            )
-        })
-      )
-      .subscribe((res: [MouseEvent, MouseEvent]) => {
-        const rect = canvasEl.getBoundingClientRect()
-
-        // previous and current position with the offset
-        const prevPos = {
-          x: res[0].clientX - rect.left,
-          y: res[0].clientY - rect.top
-        }
-
-        const currentPos = {
-          x: res[1].clientX - rect.left,
-          y: res[1].clientY - rect.top
-        }
-
-        // this method we'll implement soon to do the actual drawing
-        this.drawOnCanvas(prevPos, currentPos)
-      })
+  limpiarFirma() {
+    this.firmaPad.clear()
   }
 
-  private drawOnCanvas(prevPos: { x: number, y: number }, currentPos: { x: number, y: number }) {
-
-    if (!this.cxFirma) {
-      return
-    }
-
-    this.cxFirma.beginPath()
-    this.cxFirma.bezierCurveTo(prevPos.x, prevPos.y, currentPos.x, currentPos.y, currentPos.x, currentPos.y)
-
-    if (prevPos) {
-      this.cxFirma.moveTo(prevPos.x, prevPos.y) // from
-      this.cxFirma.lineTo(currentPos.x, currentPos.y)
-      this.cxFirma.stroke()
-    }
-
-  }
-
-  limpiarCanvas() {
-    this.cxFirma.clearRect(0, 0, this.width, this.height)
+  limpiarDanios(){
+    this.damagePad.clear()
+    this.drawCarLine()
   }
 
   limpiarForm() {
@@ -364,33 +260,62 @@ export class CrearComponent implements OnInit, AfterViewInit {
     this.matTabs.selectedIndex = 0
   }
 
-  onFormSubmit() {
-    const canvasElFirma: HTMLCanvasElement = this.canvasFirma.nativeElement
-    const blankCanvas: HTMLCanvasElement = this.blankCanvas.nativeElement
-    const cFirmData = canvasElFirma.toDataURL()
-    const bData = blankCanvas.toDataURL()
-    if (cFirmData == bData) {
-      this.f.firma.get('firmaClienteSalida').setValue(canvasElFirma.toDataURL("image/png"))
+  changePen(type){
+    switch (type) {
+      case 'quebradura':
+        this.damagePad.penColor = '#ff0000'
+        break
+
+      case 'abolladura':
+        this.damagePad.penColor = '#0008ff'
+        break
+
+      case 'rayon':
+        this.damagePad.penColor = '#00ff1a'
+        break
     }
+  }
+
+  drawCarLine(){
+    const canvas = this.damagePadElement.nativeElement
+    const ctx = canvas.getContext('2d')
+
+    let img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src = 'assets/img/car-line-draw.png'
+    img.onload = function () {
+      // get the scale
+      var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+      // get the top left position of the image
+      var x = (canvas.width / 2) - (img.width / 2) * scale;
+      var y = (canvas.height / 2) - (img.height / 2) * scale;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+    }
+  }
+
+  onFormSubmit() {
+    //const canvasElFirma: HTMLCanvasElement = this.canvasFirma.nativeElement
+    const cFirmData = this.firmaPad.toDataURL("image/png")
+
+    this.f.firma.get('firmaClienteSalida').setValue(cFirmData)
+
+    const cDamageData = this.damagePad.toDataURL("image/png")
+    this.f.danios.setValue(cDamageData)
 
     if (this.inspeccionForm.get('datosGenerales').valid && this.inspeccionForm.get('datosSalida').valid && this.inspeccionForm.get('firma').valid) {
       this.loading = true
       this.inspeccionesService.agregarInspeccion(this.inspeccionForm.value).subscribe(response => {
         if (response.error == 0) {
           this.loading = false
-          this.router.navigate(['ver-inspeccion', response.data])
+          this.router.navigate(['detail-inspeccion', response.data])
         }
       })
     }
 
   }
 
-  getDesc(array?, index?) {
-    if (array) {
-      const item = array[index]
-      return item
-    }
-  }
+
 
   increment(acc) {
     const increment = this.f.accesorios.get(acc).value + 1
@@ -402,51 +327,23 @@ export class CrearComponent implements OnInit, AfterViewInit {
     this.f.accesorios.get(acc).setValue(decrement)
   }
 
+  openResumeDialog(){
+    this.dialog.open(ResumeDialogComponent,{
+      data:{
+        inspection: this.f,
+        agencies: this.agencies
+      }
+    })
+  }
+
+  openConfirmDialog(){
+    const dialogRef = this.dialog.open(ConfirmDialogComponent)
+    dialogRef.afterClosed().subscribe(result=>{
+      if(result == true){
+        this.onFormSubmit()
+      }
+    })
+  }
+
 
 }
-
-/*
- switch (this.shape) {
-        case '1': {
-          this.cx.strokeRect(currentPos.x, currentPos.y, 20, 20)
-          break
-        }
-        case '2': {
-          this.cx.beginPath()
-          this.cx.arc(currentPos.x, currentPos.y, 11, 0, 2 * Math.PI)
-          this.cx.stroke()
-          this.cx.closePath()
-          break
-        }
-        case '3': {
-          const height = 20 * (Math.sqrt(3) / 2)
-
-          this.cx.beginPath()
-          this.cx.moveTo(currentPos.x, currentPos.y)
-          this.cx.lineTo(currentPos.x + 10, currentPos.y + height)
-          this.cx.lineTo(currentPos.x - 10, currentPos.y + height )
-
-          this.cx.closePath()
-          this.cx.stroke()
-          break
-        }
-        case '4': {
-          break
-        }
-        default: {
-          this.cx.beginPath()
-          if (prevPos) {
-            this.cx.moveTo(prevPos.x, prevPos.y) // from
-            this.cx.lineTo(currentPos.x, currentPos.y)
-            this.cx.stroke()
-          }
-        }
-
-      }
-      break
-    }
-    case 5: {
-*/
-
-
-

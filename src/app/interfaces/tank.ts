@@ -1,4 +1,4 @@
-export interface Tanque {
+export interface Tank {
   idTanqueComb?: number;
   descTanqueComb?: string;
   valorTanqueComb?: number;

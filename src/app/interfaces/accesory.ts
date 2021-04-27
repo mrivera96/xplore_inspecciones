@@ -1,4 +1,4 @@
-export interface Accesorio {
+export interface Accesory {
   idAccesorio ?: number;
   nomAccesorio ?: string;
   isActivo ?: number;

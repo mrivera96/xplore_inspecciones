@@ -3,17 +3,17 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Response } from "../interfaces/response";
 import { AuthenticationService } from './authentication.service';
-import { Usuario } from '../interfaces/usuario';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
 })
-export class InspeccionesService {
-  usuarioActual: Usuario
+export class InspectionsService {
+  usuarioActual: User
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService
-  ) { 
+  ) {
     this.usuarioActual = this.authService.currentUserValue
   }
 

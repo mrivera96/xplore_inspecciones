@@ -1,4 +1,4 @@
-export interface Vehiculo {
+export interface Car {
   idVehiculo?: number;
   idModeloVehiculo?: number;
   idTipoCombustible?: number;

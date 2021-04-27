@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {InspeccionesService} from "../../../services/inspecciones.service";
+import {InspectionsService} from "../../../services/inspections.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Inspeccion} from "../../../interfaces/inspeccion";
+import {Inspection} from "../../../interfaces/inspection";
 
 @Component({
   selector: 'app-ver',
@@ -9,16 +9,18 @@ import {Inspeccion} from "../../../interfaces/inspeccion";
   styleUrls: ['./ver.component.css']
 })
 export class VerComponent implements OnInit {
-  idInspeccion: number;
-
-  inspeccion: Inspeccion;
+  idInspeccion: number
+  apiEndPoint: string
+  inspeccion: Inspection
   loading = false;
 
   constructor(
-    private inspeccionesService: InspeccionesService,
+    private inspeccionesService: InspectionsService,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    this.apiEndPoint = 'http://192.168.0.3:8069/inspApi/public'
+  }
 
   ngOnInit(): void {
     this.loading = true
@@ -57,6 +59,6 @@ export class VerComponent implements OnInit {
   }
 
   irACerrar(){
-    this.router.navigate(['cerrar-inspeccion', this.idInspeccion])
+    this.router.navigate(['close-inspeccion', this.idInspeccion])
   }
 }

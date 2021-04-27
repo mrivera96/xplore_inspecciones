@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { first } from 'rxjs/operators';
 
-import {Usuario} from '../../interfaces/usuario';
-import {UsuariosService} from '../../services/usuarios.service';
+import {User} from '../../interfaces/user';
+import {UsersService} from '../../services/users.service';
 import {AuthenticationService} from '../../services/authentication.service';
-import { InspeccionesService } from "../../services/inspecciones.service";
-import {Inspeccion} from "../../interfaces/inspeccion";
+import { InspectionsService } from "../../services/inspections.service";
+import {Inspection} from "../../interfaces/inspection";
 import { Router } from '@angular/router';
 import {formatDate} from "@angular/common";
 
@@ -16,7 +16,7 @@ import {formatDate} from "@angular/common";
 })
 export class HomeComponent implements OnInit {
   loading = false;
-  inspecciones: Inspeccion[];
+  inspecciones: Inspection[];
   displayedColumns = [
     'Nº de Inspección',
     'Vehículo',
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
   ]
 
   constructor(
-    private inspeccionesService: InspeccionesService,
+    private inspeccionesService: InspectionsService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -40,11 +40,11 @@ export class HomeComponent implements OnInit {
   }
 
   verInspeccion(id){
-    this.router.navigate(['ver-inspeccion',id])
+    this.router.navigate(['detail-inspeccion',id])
   }
 
   cerrarInspeccion(id){
-    this.router.navigate(['cerrar-inspeccion',id])
+    this.router.navigate(['close-inspeccion',id])
   }
 
 

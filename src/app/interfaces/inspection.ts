@@ -1,6 +1,6 @@
-import { Estado } from "./estado";
+import { State } from "./state";
 
-export interface Inspeccion {
+export interface Inspection {
   idInspeccion?: number;
   idCliente?: number;
   idVehiculo?: number;
@@ -20,11 +20,12 @@ export interface Inspeccion {
   idUsuarioEntrega?: number;
   firmaClienteEntrega?: string;
   obsEntrega?: string;
-  nomRecibeVehicul?: string;
+  nomRecibeVehiculo?: string;
   nomEntregaVehiculo?: string;
   idEstado?: number;
   fechaProceso?: string;
   vehiculo?: any;
   agencia_salida?: any;
-  estado?: Estado
+  estado?: State
+  daniosSalida?: string
 }

@@ -1,4 +1,4 @@
-export interface Estado {
+export interface State {
     idEstado?: number
     descEstado?: string
     isActivo?: boolean

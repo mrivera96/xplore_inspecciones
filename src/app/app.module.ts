@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CrearComponent } from './components/inspecciones/crear/crear.component';
+import { CrearComponent } from './components/inspections/create/crear.component';
 import {MatMenuModule} from "@angular/material/menu";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
@@ -26,9 +26,11 @@ import { MatCardModule } from "@angular/material/card";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
-import { VerComponent } from './components/inspecciones/ver/ver.component';
-import { CerrarComponent } from './components/inspecciones/cerrar/cerrar.component';
+import { VerComponent } from './components/inspections/detail/ver.component';
+import { CerrarComponent } from './components/inspections/close/cerrar.component';
 import {MatTableModule} from "@angular/material/table";
+import { ResumeDialogComponent } from './components/inspections/resume-dialog/resume-dialog.component';
+import { ConfirmDialogComponent } from './components/inspections/create/confirm-dialog/confirm-dialog.component';
 
 
 @NgModule({
@@ -39,6 +41,8 @@ import {MatTableModule} from "@angular/material/table";
     CrearComponent,
     VerComponent,
     CerrarComponent,
+    ResumeDialogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,73 @@
+<!-- INICIO DE MODAL -->
+<h2 mat-dialog-title>
+  Resumen de Inspección
+</h2>
+
+<mat-dialog-content>
+  <div class="form-row mx-0">
+    <div class="col text-center">
+      <img src="assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
+    </div>
+  </div>
+  <div class="form-row mx-0">
+    <h1>Datos Generales del vehículo:</h1>
+    <hr style="margin-top: 0">
+  </div>
+  <div class="form-row mx-0">
+    <h3 class="col font-weight-bold">Número de vehículo:</h3>
+    <p class="col"> {{ inspection.datosGenerales.get('nVehiculo').value}}</p>
+    <h3 class="col font-weight-bold">Número de placa:</h3>
+    <p class="col"> {{ inspection.datosGenerales.get('nPlaca').value}}</p>
+
+  </div>
+
+  <div class="form-row mx-0">
+    <h3 class="col font-weight-bold">Marca:</h3>
+    <p class="col">{{ inspection.datosGenerales.get('marcaVeh').value}}</p>
+    <h3 class="col font-weight-bold">Model:</h3>
+    <p class="col"> {{ inspection.datosGenerales.get('modeloVeh').value}}</p>
+  </div>
+
+  <div class="form-row mx-0">
+    <h3 class="col font-weight-bold">Tipo:</h3>
+    <p
+      class="col">{{ inspection.datosGenerales.get('tipoVehiculo').value}}</p>
+    <h3 class="col font-weight-bold">Color:</h3>
+    <p class="col"> {{ inspection.datosGenerales.get('colorVeh').value}}</p>
+  </div>
+
+  <div class="form-row mx-0 ">
+    <h1>Datos de Salida:</h1>
+    <hr style="margin-top: 0" width="100%">
+  </div>
+
+  <div class="form-row mx-0">
+    <h3 class="col font-weight-bold">Agencia de salida:</h3>
+    <p class="col">{{getDesc(agencies, inspection.datosSalida.get('idAgenciaSalida').value)?.descAgencia}}</p>
+    <h3 class="col font-weight-bold">Combustible de Salida:</h3>
+    <p class="col">{{ formatLabel(inspection.datosSalida.get('combSalida').value) }}</p>
+  </div>
+
+  <div class="form-row mx-0">
+    <h3 class="col font-weight-bold">Rendimiento combustible de salida:</h3>
+    <p class="col">{{ inspection.datosSalida.get('rendCombSalida').value }}</p>
+    <h3 class="col font-weight-bold">Kilometraje:</h3>
+    <p class="col"> {{ inspection.datosSalida.get('odoSalida').value}}</p>
+  </div>
+
+  <div class="form-row mx-0">
+    <h3 class="col font-weight-bold">Fecha y hora de salida:</h3>
+    <p
+      class="col">{{ inspection.datosSalida.get('fechaSalida').value | date:'dd/MM/yyyy' + ', ' + inspection.datosSalida.get('horaSalida').value}}</p>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" mat-dialog-close>Aceptar</button>
+</mat-dialog-actions>
+
+
+<!-- FIN DE MODAL -->
+
+

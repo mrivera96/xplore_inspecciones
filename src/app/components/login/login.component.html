@@ -19,7 +19,7 @@
         <div class="form-group">
 
           <mat-form-field class="d-block" appearance="outline">
-            <mat-label>Usuario:</mat-label>
+            <mat-label>User:</mat-label>
             <input formControlName="nickName" [ngClass]="{ 'is-invalid': submitted && f.nickName.errors }" matInput
                    placeholder="Ingrese su usuario">
             <mat-icon matSuffix>account_circle</mat-icon>
@@ -40,7 +40,7 @@
 
         </div>
         <div class="form-group">
-          <input id="remember_me" formControlName="remember_me" type="checkbox"> Recordar Usuario
+          <input id="remember_me" formControlName="remember_me" type="checkbox"> Recordar User
         </div>
         <button [disabled]="loading" class="btn xplore-bg btn-outline btn-block text-white">
           <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1 "></span>

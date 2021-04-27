@@ -3,13 +3,13 @@ import { HttpClient } from "@angular/common/http";
 import { Response } from "../interfaces/response";
 import { environment } from "../../environments/environment";
 import { AuthenticationService } from './authentication.service';
-import { Usuario } from '../interfaces/usuario';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AgenciasService {
-  usuarioActual: Usuario
+export class AgenciesService {
+  usuarioActual: User
 
   constructor(private http: HttpClient,
     private authService: AuthenticationService) {

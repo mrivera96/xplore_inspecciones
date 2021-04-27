@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Vehiculo } from "../interfaces/vehiculo";
+import { Car } from "../interfaces/car";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Usuario } from "../interfaces/usuario";
+import { User } from "../interfaces/user";
 import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
 import { Response } from "../interfaces/response";
@@ -10,8 +10,8 @@ import { AuthenticationService } from './authentication.service';
 @Injectable({
   providedIn: 'root'
 })
-export class VehiculosService {
-  usuarioActual: Usuario
+export class CarsService {
+  usuarioActual: User
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService) {

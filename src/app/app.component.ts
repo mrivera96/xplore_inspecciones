@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthenticationService } from './services/authentication.service';
-import { Usuario } from './interfaces/usuario';
+import { User } from './interfaces/user';
 declare var $: any
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ declare var $: any
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentUser: Usuario;
+  currentUser: User;
   title = 'inspecciones';
 
   constructor(

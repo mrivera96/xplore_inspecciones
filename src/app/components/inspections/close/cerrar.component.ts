@@ -1,14 +1,14 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {VehiculosService} from "../../../services/vehiculos.service";
-import {AgenciasService} from "../../../services/agencias.service";
-import {Agencia} from "../../../interfaces/agencia";
-import {Tanque} from "../../../interfaces/tanque";
+import {CarsService} from "../../../services/cars.service";
+import {AgenciesService} from "../../../services/agencies.service";
+import {Agency} from "../../../interfaces/agency";
+import {Tank} from "../../../interfaces/tank";
 import {formatDate} from "@angular/common";
 import {fromEvent} from "rxjs";
 import {pairwise, switchMap, takeUntil} from "rxjs/operators";
-import { InspeccionesService } from 'src/app/services/inspecciones.service';
+import { InspectionsService } from 'src/app/services/inspections.service';
 @Component({
   selector: 'app-cerrar',
   templateUrl: './cerrar.component.html',
@@ -17,8 +17,8 @@ import { InspeccionesService } from 'src/app/services/inspecciones.service';
 export class CerrarComponent implements OnInit, AfterViewInit {
   idInspeccion: number;
   inspeccionForm: FormGroup;
-  agencias: Agencia[];
-  tanquesCombustible: Tanque[];
+  agencias: Agency[];
+  tanquesCombustible: Tank[];
   fechaActual;
   horaActual;
   @ViewChild("canvasFirma") public canvasFirma: ElementRef;
@@ -32,9 +32,9 @@ export class CerrarComponent implements OnInit, AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    private vehiculoService: VehiculosService,
-    private agenciasService: AgenciasService,
-    private inspeccionesService: InspeccionesService,
+    private vehiculoService: CarsService,
+    private agenciasService: AgenciesService,
+    private inspeccionesService: InspectionsService,
     private router: Router
     ) { }
 
@@ -122,7 +122,7 @@ export class CerrarComponent implements OnInit, AfterViewInit {
       this.inspeccionesService.cerrarInspeccion(this.inspeccionForm.value, this.idInspeccion).subscribe(response => {
         if(response.error == 0){
           this.loading = false;
-          this.router.navigate(['ver-inspeccion', response.data]);
+          this.router.navigate(['detail-inspeccion', response.data]);
         }
       });
     }

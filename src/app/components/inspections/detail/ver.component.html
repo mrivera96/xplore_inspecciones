@@ -1,0 +1,102 @@
+<!-- INICIO DE CARD -->
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      Hoja de inspección N° {{inspeccion?.idInspeccion}}
+
+    </mat-card-title>
+    <div class="float-right">
+      {{inspeccion?.estado.descEstado}}
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="col text-center" *ngIf="this.loading">
+      <img src="assets/img/loading.svg" width="50%" alt="loading">
+    </div>
+
+    <div class="container-fluid" *ngIf="!this.loading">
+      <div class="row mx-0">
+        <div class="col text-center">
+          <img src="assets/img/LOGO-XPLORE_01-ColorPrimario.png" width="40%" alt="logo_xplore">
+        </div>
+      </div>
+
+      <div class="row mx-0">
+        <h1>Datos Generales del vehículo:</h1>
+        <hr style="margin-top: 0" width="100%">
+      </div>
+
+      <div class="row mx-0">
+        <h3 class="col font-weight-bold">Número de vehículo:</h3>
+        <p class="col"> {{inspeccion?.vehiculo['nemVehiculo']}}</p>
+        <h3 class="col font-weight-bold">Número de placa:</h3>
+        <p class="col"> {{inspeccion?.vehiculo['numMatricula']}}</p>
+      </div>
+
+      <div class="row mx-0">
+        <h3 class="col font-weight-bold">Marca:</h3>
+        <p class="col">{{inspeccion?.vehiculo['marca']['descMarca']}}</p>
+        <h3 class="col font-weight-bold">Model:</h3>
+        <p class="col"> {{inspeccion?.vehiculo['modelo']['nomModelo']}}</p>
+      </div>
+
+      <div class="row mx-0 ">
+        <h1>Datos de Salida:</h1>
+        <hr style="margin-top: 0" width="100%">
+      </div>
+
+      <div class="row mx-0">
+        <h3 class="col font-weight-bold">Agencia de dalida:</h3>
+        <p class="col">{{inspeccion?.agencia_salida['descAgencia']}}</p>
+        <h3 class="col font-weight-bold">Combustible de Salida:</h3>
+        <p class="col">{{ formatLabel(inspeccion?.combSalida) }}</p>
+      </div>
+
+      <div class="row mx-0">
+        <h3 class="col font-weight-bold">Rendimiento combustible de salida:</h3>
+        <p class="col">{{ inspeccion?.rendCombSalida }}</p>
+        <h3 class="col font-weight-bold">Kilometraje:</h3>
+        <p class="col"> {{inspeccion?.odoSalida}}</p>
+      </div>
+
+      <div class="row mx-0">
+        <h3 class="col font-weight-bold">Fecha y hora de salida:</h3>
+        <p class="col">{{ inspeccion?.fechaSalida | date:'d/MM/y, h:mm a' }}</p>
+      </div>
+
+      <div class="row mx-0 ">
+        <h1>Firma:</h1>
+        <hr style="margin-top: 0" width="100%">
+      </div>
+
+      <div class="row mx-0">
+        <h3 class="col font-weight-bold">Nombre de quien recibió el vehículo:</h3>
+        <p class="col">{{ inspeccion?.nomRecibeVehiculo }}</p>
+      </div>
+
+      <div class="row mx-0">
+        <img src="{{apiEndPoint + inspeccion.firmaClienteSalida}}" alt="Firma de Salida">
+      </div>
+
+      <div class="row mx-0 ">
+        <h1>Daños:</h1>
+        <hr style="margin-top: 0" width="100%">
+      </div>
+
+      <div class="row mx-0">
+        <img src="{{apiEndPoint + inspeccion.daniosSalida}}" alt="Firma de Salida">
+      </div>
+
+    </div>
+  </mat-card-content>
+
+  <!-- INICIO DE CUERPO -->
+
+  <div class="modal-footer">
+    <button class="btn btn-outline-success" type="button" (click)="irACerrar()"><i class="fa fa-check"></i> Cerrar Inspección</button>
+    <button id="printButton" type="button" (click)="imprimirHoja()" class="btn btn-outline-primary"><i class="fa fa-print"></i> Imprimir</button>
+  </div>
+
+</mat-card>
+<!-- FIN DE CARD -->
